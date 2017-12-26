@@ -15,29 +15,78 @@ namespace GIndie\UnitTest;
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * 
- * @version GI.00.17-05-18
- * @version GI-CMMN.00.17-12-24
- * @edit 01
+ * @version GI.00.01 17-05-18 New class.
+ * @version GI-CMMN.00.00 17-12-24 New project GICommon.
+ * @edit GI-CMMN.00.01
  * - Sources from external project SG-DML
- * @edit 02
+ * @edit GI-CMMN.00.02
  * - Moved class, renamed class, implements GIInterface
  * - Display error when not implementing a method defined in the class.
- * @edit 03
+ * @edit GI-CMMN.00.03
  * - Created method's: validateDocCommentMethod(), handleMethod()
  * - Updated constructor. Using ReflectionClass to validate a class
- * @version UT.00.17-12-25
+ * 
+ * @version UT.00.00 17-12-25 New project UnitTest
  * - Created dummie class
  * - Added functions from external project GICommon
  * - Removed abstract from original class.
  * - Removed implementation of interface.
+ * @edit UT.00.01
+ * - Updated run(), __construct()
+ * - Created $reflectionClass
  */
 class ClassTest
 {
 
     /**
      * 
+     * @since UT.00.01
+     * @var \ReflectionClass Stores the ReflectionClass object that handles the class.
+     */
+    private $reflectionClass;
+
+    /**
+     * Runs the user defined functions. Implementation of a singleton pattern for Test class.
+     * 
+     * @since GI.00.01
+     * @edit UT.00.01
+     * - Moved funcionality from constructor
+     * - Removed visibility static
+     * - Use $reflectionClass 
+     */
+    public function run()
+    {
+        echo "<div style=\"font-size: 1.4em;\">------------ " .
+        $this->reflectionClass->getName() .
+        "</div>\n";
+        foreach ($this->reflectionClass->getMethods() as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
+            $this->handleMethod($this->reflectionClass->getFileName(), $ReflectionMethod);
+        }
+    }
+
+    /**
+     * Stores the ReflectionClass for handling.
+     * 
+     * @final
+     * @since GI.00.01
+     * 
+     * @param string $classname The name of the class (including namespace) to be handled.
+     * 
+     * @edit UT.00.01
+     * - Visivility changed to public. Added parameter $classname
+     * - Moved functionality to run()
+     * - Removed deprecated functionality
+     * - Use $reflectionClass 
+     */
+    final public function __construct($classname)
+    {
+        $this->reflectionClass = new \ReflectionClass($classname);
+    }
+
+    /**
+     * 
      * @param \ReflectionMethod $Method
-     * @since GI-CMMN.00.17-12-24.03
+     * @since GI-CMMN.00.03
      */
     private static function validateDocCommentMethod(\ReflectionMethod $Method)
     {
@@ -60,7 +109,7 @@ class ClassTest
     /**
      * 
      * @param \ReflectionMethod $Method
-     * @since GI-CMMN.00.17-12-24.03
+     * @since GI-CMMN.00.03
      */
     private function handleMethod($filename, \ReflectionMethod $Method)
     {
@@ -73,37 +122,6 @@ class ClassTest
     }
 
     /**
-     * @final
-     * @since GI.00.17-05-18
-     * @edit GI-CMMN.00.17-12-24.03
-     */
-    final private function __construct()
-    {
-        echo "<div style=\"font-size: 1.4em;\">------------ " .
-        \get_called_class() .
-        "</div>\n";
-        $ignoreFunctions = \get_class_methods(__CLASS__);
-        $testFunctions = \get_class_methods(\get_called_class());
-
-        $reflector = new \ReflectionClass($this->classname());
-        foreach ($reflector->getMethods() as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
-            $this->handleMethod($reflector->getFileName(), $ReflectionMethod);
-        }
-        foreach (\get_class_methods($this->classname()) as $method) {
-            switch (false)
-            {
-                case (\strcmp($method, "__toString") != 0):
-                    break;
-                case \in_array($method, $testFunctions):
-                //echo "<span style=\"color:red; font-weight: bolder;\"'>" . $method . " must be declared in UnitTestClass</span><br>";
-            }
-        }
-//        foreach ($testFunctions as $function) {
-//            \in_array($function, $ignoreFunctions) ?: static::{$function}();
-//        }
-    }
-
-    /**
      * 
      * Execute a string comparing test.
      * @static
@@ -111,7 +129,7 @@ class ClassTest
      * @param string $expected The expected output.
      * @param string $result The code that generates the expected output.
      * 
-     * @since GI.00.17-05-18
+     * @since GI.00.01
      */
     public static function execStrCmp($expected, $result)
     {
@@ -139,7 +157,7 @@ class ClassTest
      * 
      * @param \Exception $exception The exception to be compared.
      * 
-     * @since GI-CMMN.00.17-12-24
+     * @since GI-CMMN.00.01
      */
     public static function execExceptionCmp(\Exception $exception = null)
     {
@@ -157,16 +175,6 @@ class ClassTest
                 echo "</div>";
                 break;
         }
-    }
-
-    /**
-     * Runs the user defined functions. Implementation of a singleton pattern for Test class.
-     * 
-     * @since GI.00.17-05-18
-     */
-    public static function run()
-    {
-        new static();
     }
 
 }
