@@ -35,9 +35,21 @@ namespace GIndie\UnitTest;
  * - Created $reflectionClass
  * @edit UT.00.02
  * - Updated run(), validateDocCommentMethod()
+ * @edit UT.00.03
+ * - Deleted validateDocCommentMethod(), added code to validateMethod()
+ * - Updated validateMethod()
+ * - Created validateClass(), validateMethods()
+ * - trait ToUpgrade used. Moved methods execExceptionCmp(), execStrCmp()
+ * - trait ToDeprecate used.
  */
 class ClassTest
 {
+
+    /**
+     * @since UT.00.03
+     */
+    use \GIndie\UnitTest\ClassTest\ToUpgrade;
+    use \GIndie\UnitTest\ClassTest\ToDeprecate;
 
     /**
      * 
@@ -60,21 +72,14 @@ class ClassTest
      * @edit UT.00.02
      * - Added output buffering insted of echo.
      * - Method returns string.
+     * @edit UT.00.03
+     * - Use validateClass(), validateMethods()
      */
     public function run()
     {
-        ob_start();
-        ?>
-        <div style="font-size: 1.4em;">
-            Class: <?= $this->reflectionClass->getName(); ?>
-        </div>
-        <?php
-        foreach ($this->reflectionClass->getMethods() as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
-            $this->handleMethod($this->reflectionClass->getFileName(), $ReflectionMethod);
-        }
-        $out = ob_get_contents();
-        ob_end_clean();
-        return $out;
+        $rtn = $this->validateClass();
+        $rtn .= $this->validateMethods();
+        return $rtn;
     }
 
     /**
@@ -97,107 +102,81 @@ class ClassTest
     }
 
     /**
+     * Executes a class validation
+     * 
+     * @since UT.00.03
+     * 
+     * @return string
+     */
+    private function validateClass()
+    {
+        ob_start();
+        ?>
+        <div style="font-size: 1.4em;">
+            Class: <?= $this->reflectionClass->getName(); ?>
+        </div>
+        <?php
+        $out = ob_get_contents();
+        ob_end_clean();
+        return $out;
+    }
+
+    /**
+     * Executes a method validation of the reflectionClass.
+     * 
+     * @since UT.00.03
+     * 
+     * @return string Description
+     */
+    private function validateMethods()
+    {
+        $rtnStr = "";
+        foreach ($this->reflectionClass->getMethods() as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
+            $rtnStr .= $this->validateMethod($ReflectionMethod);
+        }
+        return $rtnStr;
+    }
+
+    /**
      * 
      * @since GI-CMMN.00.03
      * 
      * @param \ReflectionMethod $Method
+     * @return string Description
      * 
-     * @edit UT.00.02
-     * - Added output buffering insted of echo.
+     * @edit UT.00.03
+     * - Renamed from handleMethod
+     * - Return string
+     * - Added code from validateDocCommentMethod
      */
-    private static function validateDocCommentMethod(\ReflectionMethod $Method)
+    private function validateMethod(\ReflectionMethod $Method)
     {
-        $comment = \GIndie\Common\Parser\DocComment::parseFromString($Method->getDocComment());
-        \ob_start();
-        ?>
-        <span style="font-size: 1.1em; font-weight: bolder;"><?= $Method->name; ?></span><br>
-        <?php
-        switch (true)
+        $rtnStr = "";
+        switch ($this->reflectionClass->getFileName())
         {
             case $Method->isConstructor():
                 break;
-            default:
-                if (isset($comment["return"])) {
-                    echo "<span style=\"font-size: 0.9em;\">@return " . $comment["return"] . "</span><br>";
-                } else {
-                    echo "<span style=\"color:red;\">@return tag must be commented</span><br>";
-                }
-                break;
-        }
-        $out = \ob_get_contents();
-        \ob_end_clean();
-        echo $out;
-    }
-
-    /**
-     * 
-     * @param \ReflectionMethod $Method
-     * @since GI-CMMN.00.03
-     */
-    private function handleMethod($filename, \ReflectionMethod $Method)
-    {
-        switch ($filename)
-        {
             case $Method->getFileName():
-                static::validateDocCommentMethod($Method);
+                $comment = \GIndie\Common\Parser\DocComment::parseFromString($Method->getDocComment());
+                \ob_start();
+                ?>
+                <span style="font-size: 1.1em; font-weight: bolder;"><?= $Method->name; ?></span><br>
+                <?php
+                if (isset($comment["return"])) {
+                    ?>
+                    <span style="font-size: 0.9em;">@return <?= $comment["return"]; ?></span><br>
+                    <?php
+                } else {
+                    ?>
+                    <span style="color:red;">@return tag must added to comment</span><br>
+                    <?php
+                }
+                $out = \ob_get_contents();
+                \ob_end_clean();
+                return $out;
                 break;
         }
-    }
-
-    /**
-     * 
-     * Execute a string comparing test.
-     * @static
-     * 
-     * @param string $expected The expected output.
-     * @param string $result The code that generates the expected output.
-     * 
-     * @since GI.00.01
-     */
-    public static function execStrCmp($expected, $result)
-    {
-        echo "<div style = \"font-size: 1.1em;\">" .
-        \debug_backtrace()[1]['function'] . "::";
-        switch (\strcmp($expected, $result))
-        {
-            case 0:
-                echo "<span style=\"color: green; font-weight: bolder;\">Passed</span></div>";
-                break;
-            default:
-                echo "<span style=\"color:red; font-weight: bolder;\"'>Error:</span></div>";
-                echo "<br/><span style=\"font-size: 1.05em;\">Expected:</span><pre>" .
-                \htmlentities($expected) . "</pre>" .
-                "<span style=\"font-size: 1.05em;\">Resutl:</span><pre>" . \htmlentities($result) .
-                "</pre><br />\n <------------------------>";
-                break;
-        }
-    }
-
-    /**
-     * 
-     * Execute a string comparing test.
-     * @static
-     * 
-     * @param \Exception $exception The exception to be compared.
-     * 
-     * @since GI-CMMN.00.01
-     */
-    public static function execExceptionCmp(\Exception $exception = null)
-    {
-        echo "<div style=\"font-size: 1.1em;\">" .
-        \debug_backtrace()[1]['function'] . "::";
-        switch (true)
-        {
-            case \is_null($exception):
-                echo "<span style=\"color:red; font-weight: bolder;\"'>Error</span></div>";
-                break;
-            default:
-                echo "<span style=\"color: green; font-weight: bolder;\">Passed (exception thrown) ";
-                echo "</span>";
-                echo $exception->getMessage();
-                echo "</div>";
-                break;
-        }
+        return $rtnStr;
     }
 
 }
