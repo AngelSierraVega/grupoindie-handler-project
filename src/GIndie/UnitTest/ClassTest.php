@@ -1,5 +1,4 @@
 <?php
-
 /**
  * UnitTest - ClassTest
  *
@@ -34,6 +33,8 @@ namespace GIndie\UnitTest;
  * @edit UT.00.01
  * - Updated run(), __construct()
  * - Created $reflectionClass
+ * @edit UT.00.02
+ * - Updated run(), validateDocCommentMethod()
  */
 class ClassTest
 {
@@ -49,19 +50,31 @@ class ClassTest
      * Runs the user defined functions. Implementation of a singleton pattern for Test class.
      * 
      * @since GI.00.01
+     * 
+     * @return string
+     * 
      * @edit UT.00.01
      * - Moved funcionality from constructor
      * - Removed visibility static
      * - Use $reflectionClass 
+     * @edit UT.00.02
+     * - Added output buffering insted of echo.
+     * - Method returns string.
      */
     public function run()
     {
-        echo "<div style=\"font-size: 1.4em;\">------------ " .
-        $this->reflectionClass->getName() .
-        "</div>\n";
+        ob_start();
+        ?>
+        <div style="font-size: 1.4em;">
+            Class: <?= $this->reflectionClass->getName(); ?>
+        </div>
+        <?php
         foreach ($this->reflectionClass->getMethods() as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
             $this->handleMethod($this->reflectionClass->getFileName(), $ReflectionMethod);
         }
+        $out = ob_get_contents();
+        ob_end_clean();
+        return $out;
     }
 
     /**
@@ -85,13 +98,20 @@ class ClassTest
 
     /**
      * 
-     * @param \ReflectionMethod $Method
      * @since GI-CMMN.00.03
+     * 
+     * @param \ReflectionMethod $Method
+     * 
+     * @edit UT.00.02
+     * - Added output buffering insted of echo.
      */
     private static function validateDocCommentMethod(\ReflectionMethod $Method)
     {
-        echo "<span style=\"font-size: 1.1em; font-weight: bolder;\">" . $Method->name . " </span><br>";
         $comment = \GIndie\Common\Parser\DocComment::parseFromString($Method->getDocComment());
+        \ob_start();
+        ?>
+        <span style="font-size: 1.1em; font-weight: bolder;"><?= $Method->name; ?></span><br>
+        <?php
         switch (true)
         {
             case $Method->isConstructor():
@@ -104,6 +124,9 @@ class ClassTest
                 }
                 break;
         }
+        $out = \ob_get_contents();
+        \ob_end_clean();
+        echo $out;
     }
 
     /**
