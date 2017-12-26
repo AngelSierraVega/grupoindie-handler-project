@@ -10,7 +10,7 @@ ${licensePrefix}@copyright (C) ${date?date?string("yyyy")} Angel Sierra Vega. Gr
 ${licensePrefix?replace(" +$", "", "r")}
 ${licensePrefix}@package UnitTest
 ${licensePrefix?replace(" +$", "", "r")}
-${licensePrefix}@version UT.00.${date?date?string("yy-MM-dd")}
+${licensePrefix}@version UT.00.00 ${date?date?string("yy-MM-dd")} UPDATE_DESCRIPTION
 <#if licenseLast??>
 ${licenseLast}
 </#if>
