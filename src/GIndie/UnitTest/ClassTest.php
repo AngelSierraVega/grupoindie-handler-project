@@ -41,6 +41,10 @@ namespace GIndie\UnitTest;
  * - Created validateClass(), validateMethods()
  * - trait ToUpgrade used. Moved methods execExceptionCmp(), execStrCmp()
  * - trait ToDeprecate used.
+ * @edit UT.00.04 17-12-28
+ * - Added var $testTitle
+ * - Added method: readClassProperties(), validateClassDocComments(), 
+ * - Updated method: __construct(), 
  */
 class ClassTest
 {
@@ -95,10 +99,13 @@ class ClassTest
      * - Moved functionality to run()
      * - Removed deprecated functionality
      * - Use $reflectionClass 
+     * @edit UT.00.04
+     * - Use var testTitle
      */
     final public function __construct($classname)
     {
         $this->reflectionClass = new \ReflectionClass($classname);
+        $this->testTitle = $this->reflectionClass->getName();
     }
 
     /**
@@ -107,14 +114,95 @@ class ClassTest
      * @since UT.00.03
      * 
      * @return string
+     * @edit UT.00.04
+     * - Use readClassProperties(), validateClassDocComments()
      */
     private function validateClass()
     {
+        $out = $this->readClassProperties();
+        $out .= $this->validateClassDocComments();
+        return $out;
+    }
+
+    /**
+     * readClassProperties
+     * 
+     * @since UT.00.04
+     * @return string
+     */
+    private function readClassProperties()
+    {
         ob_start();
         ?>
-        <div style="font-size: 1.4em;">
-            Class: <?= $this->reflectionClass->getName(); ?>
-        </div>
+        <table style="width:100%">
+            <caption>readClassProperties</caption>
+            <tr>
+                <th>getShortName</th>
+                <th>isAbstract</th>
+                <th>isInterface</th>
+                <th>isTrait</th>
+                <th>getFileName</th>
+            </tr>
+            <tr>
+                <td><?= $this->reflectionClass->getShortName(); ?></td>
+                <td><?= $this->reflectionClass->isAbstract() ? "Yes" : "No"; ?></td>
+                <td><?= $this->reflectionClass->isInterface() ? "Yes" : "No"; ?></td>
+                <td><?= $this->reflectionClass->isTrait() ? "Yes" : "No"; ?></td>
+                <td><?= $this->reflectionClass->getFileName(); ?></td>
+            </tr>
+        </table>
+        <?php
+        $out = ob_get_contents();
+        ob_end_clean();
+        return $out;
+    }
+
+    /**
+     * validateClassDocComments
+     * 
+     * @since UT.00.04
+     * @return string
+     */
+    private function validateClassDocComments()
+    {
+        $docComments = \GIndie\Common\Parser\DocComment::parseFromString($this->reflectionClass->getDocComment());
+        ob_start();
+        ?>
+        <table style="width:100%">
+            <caption>validateClassDocComments</caption>
+            <tr>
+                <th colspan="3">description</th>
+                <th colspan="2">link</th>
+            </tr>
+            <tr>
+                <td colspan="3"><?= $docComments["description"]; ?></td>
+                <td colspan="2"><?= $docComments["link"]; ?></td>
+            </tr>
+            <tr>
+                <th>copyright</th>
+                <th>author</th>
+                <th>package</th>
+                <th>subpackage</th>
+                <th>version</th>
+            </tr>
+            <tr>
+                <td><?= $docComments["copyright"]; ?></td>
+                <td><?= $docComments["author"]; ?></td>
+                <td><?= $docComments["package"]; ?></td>
+                <td><?= $docComments["subpackage"]; ?></td>
+                <td><?= $docComments["version"]; ?></td>
+            </tr>
+            <tr>
+                <th colspan="5">edit</th>
+            </tr>
+            <tr>
+                <?php
+                foreach ($docComments["edit"] as $value) {
+                    echo "<td>{$value}</td>";
+                }
+                ?>
+            </tr>
+        </table>
         <?php
         $out = ob_get_contents();
         ob_end_clean();
@@ -178,5 +266,12 @@ class ClassTest
         }
         return $rtnStr;
     }
+
+    /**
+     *
+     * @since UT.00.04
+     * @var string|null The title of the current test
+     */
+    public $testTitle;
 
 }
