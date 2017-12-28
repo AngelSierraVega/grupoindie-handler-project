@@ -1,33 +1,32 @@
 <?php
 
 /**
- * UnitTest - DML
+ * UnitTest - Project
  *
  * @copyright (C) 2017 Angel Sierra Vega. Grupo INDIE.
  *
  * @package UnitTest
- *
- * 
  */
 
-namespace GIndie\UnitTest\Platform\Module;
+namespace GIndie\UnitTest\Platform\Module\DML;
 
 /**
- * Description of DML
+ * Description of Project
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * 
- * @version UT.00.00 17-12-27 Class created.
+ * @version UT.00.00 17-12-28 Module created
  * @edit UT.00.01
- * - Added code from Platform/dist/examples
+ * - Extended from ClassTestModule
+ * - Implemented abstract className()
+ * - Added constant NAME
  */
-class DML extends AbstractModule
+class Project extends \GIndie\UnitTest\Platform\Module\AbstractModule
 {
 
     /**
      * @since UT.00.01
      */
-    const NAME = "DML";
+    const NAME = "Project";
 
     /**
      * @since UT.00.01
