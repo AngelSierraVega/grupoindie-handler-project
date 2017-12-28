@@ -44,7 +44,11 @@ namespace GIndie\UnitTest;
  * @edit UT.00.04 17-12-28
  * - Added var $testTitle
  * - Added method: readClassProperties(), validateClassDocComments(), 
- * - Updated method: __construct(), 
+ * - Updated method: __construct()
+ * @edit UT.00.05
+ * - Added var: $docComments, $requiredClassTags
+ * - Added method: getTableData()
+ * - Updated method: validateClassDocComments()
  */
 class ClassTest
 {
@@ -134,7 +138,7 @@ class ClassTest
     {
         ob_start();
         ?>
-        <table style="width:100%">
+        <table class="table table-bordered">
             <caption>readClassProperties</caption>
             <tr>
                 <th>getShortName</th>
@@ -158,50 +162,82 @@ class ClassTest
     }
 
     /**
+     * 
+     * @since UT.00.05
+     * @var array
+     */
+    private $requiredClassTags = ["copyright", "package", "description", "author", "version"];
+
+    /**
+     * 
+     * @since UT.00.05
+     * @var array|null 
+     */
+    private $docComments;
+
+    /**
+     * 
+     * @since UT.00.05
+     * 
+     * @param string $tagname
+     * @param string $colspan
+     * 
+     * @return string
+     */
+    private function getTableData($tagname, $colspan = "1")
+    {
+        if (\in_array($tagname, $this->requiredClassTags)) {
+            if (isset($this->docComments[$tagname])) {
+                $out = "<td colspan=\"{$colspan}\" class=\"success\">";
+                $out .= "<sup>@{$tagname}</sup> ";
+                $out .= $this->docComments[$tagname] . "</td>";
+                return $out;
+            } else {
+                return "<td colspan=\"{$colspan}\" class=\"danger\"><sup>@{$tagname}</sup> Tag not setted.</td>";
+            }
+        } else {
+            if (isset($this->docComments[$tagname])) {
+                $out = "<td colspan=\"{$colspan}\" class=\"info\"><sup>@{$tagname}</sup> ";
+                $out .= $this->docComments[$tagname] . "</td>";
+                return $out;
+            } else {
+                return "<td colspan=\"{$colspan}\" ><sup>@{$tagname}</sup></td>";
+            }
+        }
+    }
+
+    /**
      * validateClassDocComments
      * 
      * @since UT.00.04
      * @return string
+     * @edit UT.00.05
+     * - Updated table
+     * - Used var $docComments
      */
     private function validateClassDocComments()
     {
-        $docComments = \GIndie\Common\Parser\DocComment::parseFromString($this->reflectionClass->getDocComment());
+        $this->docComments = \GIndie\Common\Parser\DocComment::parseFromString($this->reflectionClass->getDocComment());
         ob_start();
         ?>
-        <table style="width:100%">
+        <table class="table table-bordered">
             <caption>validateClassDocComments</caption>
             <tr>
-                <th colspan="3">description</th>
-                <th colspan="2">link</th>
+                <?= $this->getTableData("description", "3"); ?>
+                <?= $this->getTableData("link", "2"); ?>
             </tr>
             <tr>
-                <td colspan="3"><?= $docComments["description"]; ?></td>
-                <td colspan="2"><?= $docComments["link"]; ?></td>
+                <?= $this->getTableData("copyright"); ?>
+                <?= $this->getTableData("author"); ?>
+                <?= $this->getTableData("package"); ?>
+                <?= $this->getTableData("subpackage"); ?>
+                <?= $this->getTableData("version"); ?>
             </tr>
-            <tr>
-                <th>copyright</th>
-                <th>author</th>
-                <th>package</th>
-                <th>subpackage</th>
-                <th>version</th>
-            </tr>
-            <tr>
-                <td><?= $docComments["copyright"]; ?></td>
-                <td><?= $docComments["author"]; ?></td>
-                <td><?= $docComments["package"]; ?></td>
-                <td><?= $docComments["subpackage"]; ?></td>
-                <td><?= $docComments["version"]; ?></td>
-            </tr>
-            <tr>
-                <th colspan="5">edit</th>
-            </tr>
-            <tr>
-                <?php
-                foreach ($docComments["edit"] as $value) {
-                    echo "<td>{$value}</td>";
-                }
-                ?>
-            </tr>
+            <?php
+            foreach ($this->docComments["edit"] as $value) {
+                echo "<tr><td colspan='5'><sup>@edit</sup> {$value}</td></tr>";
+            }
+            ?>
         </table>
         <?php
         $out = ob_get_contents();
