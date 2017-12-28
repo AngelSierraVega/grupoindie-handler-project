@@ -16,40 +16,40 @@ namespace GIndie\UnitTest\ClassTest;
  * @version UT.00.00 17-12-25
  * @edit UT.00.01 17-12-28 
  * - Added code from UnitTest\ClassTest
+ * @edit UT.00.02
+ * - Functional class
+ * @edit UT.00.03
  */
 class ReflectionClass extends \ReflectionClass
 {
 
     /**
-     * getTableData
      * 
-     * @since UT.00.01
-     * 
-     * @param string $tagname
-     * @param string $colspan
-     * 
-     * @return string
+     * @since UT.00.02
+     * @param type $argument
+     * @edit UT.00.03
      */
-    private function getTableData($tagname, $colspan = "1")
+    public function __construct($argument)
     {
-        if (\in_array($tagname, $this->requiredClassTags)) {
-            if (isset($this->docComments[$tagname])) {
-                $out = "<td colspan=\"{$colspan}\" class=\"success\">";
-                $out .= "<sup>@{$tagname}</sup> ";
-                $out .= $this->docComments[$tagname] . "</td>";
-                return $out;
-            } else {
-                return "<td colspan=\"{$colspan}\" class=\"danger\"><sup>@{$tagname}</sup> Tag not setted.</td>";
-            }
-        } else {
-            if (isset($this->docComments[$tagname])) {
-                $out = "<td colspan=\"{$colspan}\" class=\"info\"><sup>@{$tagname}</sup> ";
-                $out .= $this->docComments[$tagname] . "</td>";
-                return $out;
-            } else {
-                return "<td colspan=\"{$colspan}\" ><sup>@{$tagname}</sup></td>";
+        parent::__construct($argument);
+        $this->docComments = \GIndie\Common\Parser\DocComment::parseFromString($this->getDocComment());
+        foreach ($this->getMethods() as $ReflectionMethod) {
+            switch ($this->getFileName())
+            {
+                case $ReflectionMethod->getFileName():
+                    $this->fileMethods[] = new ReflectionMethod($this->getName(), $ReflectionMethod->name);
+                    break;
             }
         }
+    }
+
+    /**
+     * @since UT.00.01
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->getName();
     }
 
     /**
@@ -58,24 +58,24 @@ class ReflectionClass extends \ReflectionClass
      * @since UT.00.01
      * 
      * @return string
+     * @edit UT.00.02
      */
-    private function validateDocComments()
+    public function validateDocComments()
     {
-        $this->docComments = \GIndie\Common\Parser\DocComment::parseFromString($this->reflectionClass->getDocComment());
         ob_start();
         ?>
         <table class="table table-bordered">
-            <caption>validateClassDocComments</caption>
+            <caption>validateDocComments</caption>
             <tr>
-                <?= $this->getTableData("description", "3"); ?>
-                <?= $this->getTableData("link", "2"); ?>
+                <?= $this->validateTag("description", "3"); ?>
+                <?= $this->validateTag("link", "2"); ?>
             </tr>
             <tr>
-                <?= $this->getTableData("copyright"); ?>
-                <?= $this->getTableData("author"); ?>
-                <?= $this->getTableData("package"); ?>
-                <?= $this->getTableData("subpackage"); ?>
-                <?= $this->getTableData("version"); ?>
+                <?= $this->validateTag("copyright"); ?>
+                <?= $this->validateTag("author"); ?>
+                <?= $this->validateTag("package"); ?>
+                <?= $this->validateTag("subpackage"); ?>
+                <?= $this->validateTag("version"); ?>
             </tr>
             <?php
             foreach ($this->docComments["edit"] as $value) {
@@ -100,7 +100,7 @@ class ReflectionClass extends \ReflectionClass
         ob_start();
         ?>
         <table class="table table-bordered">
-            <caption>readClassProperties</caption>
+            <caption>validateProperties</caption>
             <tr>
                 <th>getShortName</th>
                 <th>isAbstract</th>
@@ -123,43 +123,54 @@ class ReflectionClass extends \ReflectionClass
     }
 
     /**
+     * Executes a method validation of the reflectionClass.
      * 
-     * @since UT.00.01
+     * @since UT.00.02
      * 
-     * @param \ReflectionMethod $Method
      * @return string Description
-     * 
      */
-    private function validateMethod(\ReflectionMethod $Method)
+    public function validateMethods()
     {
         $rtnStr = "";
-        switch ($this->reflectionClass->getFileName())
-        {
-            case $Method->isConstructor():
-                break;
-            case $Method->getFileName():
-                $comment = \GIndie\Common\Parser\DocComment::parseFromString($Method->getDocComment());
-                \ob_start();
-                ?>
-                <span style="font-size: 1.1em; font-weight: bolder;"><?= $Method->name; ?></span><br>
-                <?php
-                if (isset($comment["return"])) {
-                    ?>
-                    <span style="font-size: 0.9em;">@return <?= $comment["return"]; ?></span><br>
-                    <?php
-                } else {
-                    ?>
-                    <span style="color:red;">@return tag must added to comment</span><br>
-                    <?php
-                }
-                $out = \ob_get_contents();
-                \ob_end_clean();
-                return $out;
-                break;
+        foreach ($this->fileMethods as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
+            $rtnStr .= $ReflectionMethod->validate();
         }
         return $rtnStr;
     }
-    
+
+    /**
+     * getTableData
+     * 
+     * @since UT.00.01
+     * 
+     * @param string $tagname
+     * @param string $colspan
+     * 
+     * @return string
+     * @edit UT.00.02
+     */
+    private function validateTag($tagname, $colspan = "1")
+    {
+        if (\in_array($tagname, $this->requiredClassTags)) {
+            if (isset($this->docComments[$tagname])) {
+                $out = "<td colspan=\"{$colspan}\" class=\"success\">";
+                $out .= "<sup>@{$tagname}</sup> ";
+                $out .= $this->docComments[$tagname] . "</td>";
+                return $out;
+            } else {
+                return "<td colspan=\"{$colspan}\" class=\"danger\"><sup>@{$tagname}</sup> Tag not setted.</td>";
+            }
+        } else {
+            if (isset($this->docComments[$tagname])) {
+                $out = "<td colspan=\"{$colspan}\" class=\"info\"><sup>@{$tagname}</sup> ";
+                $out .= $this->docComments[$tagname] . "</td>";
+                return $out;
+            } else {
+                return "<td colspan=\"{$colspan}\" ><sup>@{$tagname}</sup></td>";
+            }
+        }
+    }
+
     /**
      * 
      * @since UT.00.01
@@ -174,13 +185,10 @@ class ReflectionClass extends \ReflectionClass
      */
     private $requiredClassTags = ["copyright", "package", "description", "author", "version"];
 
-    
-
     /**
-     *
-     * @since UT.00.01
-     * @var string|null The title of the current test
+     * @since UT.00.03
+     * @var array
      */
-    public $testTitle;
+    private $fileMethods = [];
 
 }

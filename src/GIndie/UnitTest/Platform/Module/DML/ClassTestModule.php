@@ -40,7 +40,7 @@ abstract class ClassTestModule extends \GIndie\UnitTest\Platform\Module\Abstract
         {
             case "ii-i-i":
                 $ClassTest = new \GIndie\UnitTest\ClassTest($this->className());
-                return new \GIndie\Platform\View\Widget("ClassTest", false, $ClassTest->run());
+                return new \GIndie\Platform\View\Widget($ClassTest->getTitle(), false, $ClassTest->run());
             default:
                 return parent::widgetReload($id, $class, $selected);
         }
