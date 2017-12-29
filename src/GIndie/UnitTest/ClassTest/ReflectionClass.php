@@ -19,9 +19,16 @@ namespace GIndie\UnitTest\ClassTest;
  * @edit UT.00.02
  * - Functional class
  * @edit UT.00.03
+ * @edit UT.00.04 17-12-29
+ * - Implemented interterface and trait
  */
-class ReflectionClass extends \ReflectionClass
+class ReflectionClass extends \ReflectionClass implements ReflectionInterface
 {
+
+    /**
+     * @since UT.00.04
+     */
+    use \GIndie\UnitTest\ClassTest\ReflectionCommon;
 
     /**
      * 
@@ -44,26 +51,39 @@ class ReflectionClass extends \ReflectionClass
     }
 
     /**
-     * @since UT.00.01
-     * @return string
+     * @since UT.00.04
+     * @return array
      */
-    public function getTitle()
+    public function requiredTags()
     {
-        return $this->getName();
+        return ["copyright", "package", "description", "author", "version"];
     }
 
     /**
-     * validateClassDocComments
-     * 
-     * @since UT.00.01
-     * 
+     * @edit UT.00.04
      * @return string
-     * @edit UT.00.02
      */
-    public function validateDocComments()
+    public function validate()
     {
         ob_start();
         ?>
+        <table class="table table-bordered">
+            <caption>validateProperties</caption>
+            <tr>
+                <th>getShortName</th>
+                <th>isAbstract</th>
+                <th>isInterface</th>
+                <th>isTrait</th>
+                <th>getFileName</th>
+            </tr>
+            <tr>
+                <td><?= $this->getShortName(); ?></td>
+                <td><?= $this->isAbstract() ? "Yes" : "No"; ?></td>
+                <td><?= $this->isInterface() ? "Yes" : "No"; ?></td>
+                <td><?= $this->isTrait() ? "Yes" : "No"; ?></td>
+                <td><?= $this->getFileName(); ?></td>
+            </tr>
+        </table>
         <table class="table table-bordered">
             <caption>validateDocComments</caption>
             <tr>
@@ -86,40 +106,7 @@ class ReflectionClass extends \ReflectionClass
         <?php
         $out = ob_get_contents();
         ob_end_clean();
-        return $out;
-    }
-
-    /**
-     * readClassProperties
-     * 
-     * @since UT.00.01
-     * @return string
-     */
-    public function validateProperties()
-    {
-        ob_start();
-        ?>
-        <table class="table table-bordered">
-            <caption>validateProperties</caption>
-            <tr>
-                <th>getShortName</th>
-                <th>isAbstract</th>
-                <th>isInterface</th>
-                <th>isTrait</th>
-                <th>getFileName</th>
-            </tr>
-            <tr>
-                <td><?= $this->getShortName(); ?></td>
-                <td><?= $this->isAbstract() ? "Yes" : "No"; ?></td>
-                <td><?= $this->isInterface() ? "Yes" : "No"; ?></td>
-                <td><?= $this->isTrait() ? "Yes" : "No"; ?></td>
-                <td><?= $this->getFileName(); ?></td>
-            </tr>
-        </table>
-        <?php
-        $out = ob_get_contents();
-        ob_end_clean();
-        return $out;
+        return $out . $this->validateMethods();
     }
 
     /**
@@ -128,8 +115,9 @@ class ReflectionClass extends \ReflectionClass
      * @since UT.00.02
      * 
      * @return string Description
+     * @edit UT.00.04
      */
-    public function validateMethods()
+    private function validateMethods()
     {
         $rtnStr = "";
         foreach ($this->fileMethods as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
@@ -137,53 +125,6 @@ class ReflectionClass extends \ReflectionClass
         }
         return $rtnStr;
     }
-
-    /**
-     * getTableData
-     * 
-     * @since UT.00.01
-     * 
-     * @param string $tagname
-     * @param string $colspan
-     * 
-     * @return string
-     * @edit UT.00.02
-     */
-    private function validateTag($tagname, $colspan = "1")
-    {
-        if (\in_array($tagname, $this->requiredClassTags)) {
-            if (isset($this->docComments[$tagname])) {
-                $out = "<td colspan=\"{$colspan}\" class=\"success\">";
-                $out .= "<sup>@{$tagname}</sup> ";
-                $out .= $this->docComments[$tagname] . "</td>";
-                return $out;
-            } else {
-                return "<td colspan=\"{$colspan}\" class=\"danger\"><sup>@{$tagname}</sup> Tag not setted.</td>";
-            }
-        } else {
-            if (isset($this->docComments[$tagname])) {
-                $out = "<td colspan=\"{$colspan}\" class=\"info\"><sup>@{$tagname}</sup> ";
-                $out .= $this->docComments[$tagname] . "</td>";
-                return $out;
-            } else {
-                return "<td colspan=\"{$colspan}\" ><sup>@{$tagname}</sup></td>";
-            }
-        }
-    }
-
-    /**
-     * 
-     * @since UT.00.01
-     * @var array|null 
-     */
-    private $docComments;
-
-    /**
-     * 
-     * @since UT.00.01
-     * @var array
-     */
-    private $requiredClassTags = ["copyright", "package", "description", "author", "version"];
 
     /**
      * @since UT.00.03

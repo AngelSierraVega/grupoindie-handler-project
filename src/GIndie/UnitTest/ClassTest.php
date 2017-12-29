@@ -140,9 +140,9 @@ class ClassTest
      */
     private function validateClass()
     {
-        $out = $this->reflectionClass->validateProperties();
-        $out .= $this->reflectionClass->validateDocComments();
-        $out .= $this->reflectionClass->validateMethods();
+        $out = $this->reflectionClass->validate();
+//        $out .= $this->reflectionClass->validateDocComments();
+//        $out .= $this->reflectionClass->validateMethods();
         return $out;
     }
 
