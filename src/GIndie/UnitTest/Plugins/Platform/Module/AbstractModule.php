@@ -9,7 +9,7 @@
  * 
  */
 
-namespace GIndie\UnitTest\Platform\Module;
+namespace GIndie\UnitTest\Plugins\Platform\Module;
 
 /**
  * Description of AbstractModule
@@ -92,19 +92,19 @@ abstract class AbstractModule extends \GIndie\Platform\Controller\Module
                 <th class='info'>Status</th>
             </tr>
             <?php
-            foreach ($projectHandler->classes() as $classTest) {
-                $classTest = new \GIndie\UnitTest\ClassTest($classTest);
-                $classTest->unitTestPublicFileMethods();
+            foreach ($projectHandler->projectClasses() as $classTest) {
+                $classTest = new \GIndie\UnitTest\HandlerClass($classTest);
+                $classTest->execUnitTest();
                 switch (true)
                 {
-                    case \is_string($classTest->unitTestPublicFileMethodsStatus):
-                        echo "<tr class='warning'><td>{$classTest->getTitle()}</td><td>{$classTest->unitTestPublicFileMethodsStatus}</td></tr>";
+                    case \is_string($classTest->unitTestStatus):
+                        echo "<tr class='warning'><td>{$classTest->formattedTitle()}</td><td>{$classTest->unitTestStatus}</td></tr>";
                         break;
-                    case ($classTest->unitTestPublicFileMethodsStatus === true):
-                        echo "<tr class='success'><td>{$classTest->getTitle()}</td><td>Success</td></tr>";
+                    case ($classTest->unitTestStatus === true):
+                        echo "<tr class='success'><td>{$classTest->formattedTitle()}</td><td>Success</td></tr>";
                         break;
                     default:
-                        echo "<tr class='danger'><td>{$classTest->getTitle()}</td><td>{$classTest->lastError}</td></tr>";
+                        echo "<tr class='danger'><td>{$classTest->formattedTitle()}</td><td>{$classTest->unitTestLastError}</td></tr>";
                         break;
                 }
             }

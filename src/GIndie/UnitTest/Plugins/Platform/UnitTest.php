@@ -8,7 +8,7 @@
  * @package UnitTest
  */
 
-namespace GIndie\UnitTest\Platform;
+namespace GIndie\UnitTest\Plugins\Platform;
 
 /**
  * Description of UnitTest

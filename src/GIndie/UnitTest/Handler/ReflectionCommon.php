@@ -4,31 +4,30 @@
  * UnitTest - ReflectionCommon
  */
 
-namespace GIndie\UnitTest\ClassTest;
+namespace GIndie\UnitTest\Handler;
 
 /**
  * Description of ReflectionCommon
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @copyright (C) 2017 Angel Sierra Vega. Grupo INDIE.
+ * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
  * @package UnitTest
- * @version UT.00.00 17-12-28 Created trait
- * @edit UT.00.01 17-12-29
- * - Functional trait.
- * @edit UT.00.02 18-01-02
- * - Revised/added vars
- * - Added getDocComments()
+ *
+ * @version UT.00.00 18-01-03 Trait created.
+ * @edit UT.00.01
+ * - Moved in methods.
  */
 trait ReflectionCommon
-{ 
-    
+{
+
     /**
      * 
-     * @since UT.00.02
+     * @since UT.00.01
      * @return array
      */
-    public function getDocComments(){
+    public function getDocComments()
+    {
         return $this->docComments;
     }
 
@@ -36,7 +35,7 @@ trait ReflectionCommon
      * @since UT.00.01
      * @return string
      */
-    public function getTitle()
+    public function formattedTitle()
     {
         return $this->getName();
     }
@@ -72,29 +71,12 @@ trait ReflectionCommon
             }
         }
     }
-    
+
     /**
      * 
      * @since UT.00.01
      * @var array|null 
-     * @edit UT.00.02
      */
     protected $docComments;
-    
-    /**
-     * Stores the status of the unit test for the method.
-     * 
-     * @since UT.00.02
-     * @var boolean|null 
-     */
-    public $unitTestStatus;
-    
-    /**
-     * Stores the last error of the unit test for the method.
-     * 
-     * @since UT.00.02
-     * @var string|null 
-     */
-    public $unitTestLastError;
 
 }

@@ -97,11 +97,18 @@ class DocComment extends \GIndie\Common\Parser\DocComment
         foreach ($data as $tmp) {
             switch (0)
             {
+                case \strcmp($tmp, "null"):
+                    $rtnArray[] = "null";
+                    //\var_dump("ENTRO para " .$tmp );
+                    break;
                 case \strpos($tmp, '"'):
                     $rtnArray[] = \substr($tmp, 1, -1);
                     break;
                 case \strpos($tmp, '['):
                     $tmpArray = \explode(",", \substr($tmp, 1, -1));
+                    /**
+                     * @todo Validation of =>
+                     */
                     if (\strstr($tmp, "=>") !== false) {
                         foreach ($tmpArray as $tmpExploded) {
                             $tmpExploded2 = \explode("=>", $tmpExploded);
@@ -122,6 +129,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                     break;
             }
         }
+        
         return $rtnArray;
     }
 

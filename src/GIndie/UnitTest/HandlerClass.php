@@ -1,43 +1,38 @@
 <?php
 /**
- * UnitTest - ReflectionClass
+ * UnitTest - HandlerClass
  */
 
-namespace GIndie\UnitTest\ClassTest;
+namespace GIndie\UnitTest;
 
 /**
- * Description of ReflectionClass
+ * Description of HandlerClass
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @copyright (C) 2017 Angel Sierra Vega. Grupo INDIE.
+ * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
  * @package UnitTest
  *
- * @version UT.00.00 17-12-25
- * @edit UT.00.01 17-12-28 
- * - Added code from UnitTest\ClassTest
- * @edit UT.00.02
- * - Functional class
- * @edit UT.00.03
- * @edit UT.00.04 17-12-29
- * - Implemented interterface and trait
- * @edit UT.00.05 18-01-02
- * - var fileMethods skips protected methods, public __toString() and constructor if abstract class
- * - validateMethods(): Visibility to public
+ * @version UT.00.00 18-01-03 Class created.
+ * @edit UT.00.01
+ * - Added code from GIndie\UnitTest\ClassTest\ReflectionClass
+ * - Updated traits
+ * - Interfaces implemented.
  */
-class ReflectionClass extends \ReflectionClass implements ReflectionInterface
+class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler, Handler\ReflectionInterface
 {
 
     /**
-     * @since UT.00.04
+     * 
+     * @since UT.00.01
      */
-    use \GIndie\UnitTest\ClassTest\ReflectionCommon;
+    use Handler\Common;
+    use Handler\ReflectionCommon;
 
     /**
      * 
-     * @since UT.00.02
+     * @since UT.00.01
      * @param type $argument
-     * @edit UT.00.05
      */
     public function __construct($argument)
     {
@@ -58,7 +53,7 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
 //                                break;
 //                            }
                         default:
-                            $this->fileMethods[] = new ReflectionMethod($this->getName(), $ReflectionMethod->name);
+                            $this->fileMethods[] = new HandlerMethod($this->getName(), $ReflectionMethod->name);
                             break;
                     }
                     break;
@@ -67,7 +62,8 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
     }
 
     /**
-     * @since UT.00.04
+     * 
+     * @since UT.00.01
      * @return array
      */
     public function requiredTags()
@@ -76,7 +72,8 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
     }
 
     /**
-     * @edit UT.00.04
+     * 
+     * @since UT.00.01
      * @return string
      */
     public function validate()
@@ -128,18 +125,16 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
     /**
      * Executes a method validation of the reflectionClass.
      * 
-     * @since UT.00.02
+     * @since UT.00.01
      * 
      * @return string Description
-     * @edit UT.00.04
-     * @edit UT.00.05
      */
-    public function validateMethods()
+    public function execUnitTest()
     {
         $this->unitTestStatus = true;
         $rtnStr = "";
         foreach ($this->fileMethods as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
-            $rtnStr .= $ReflectionMethod->validate();
+            $rtnStr .= $ReflectionMethod->execUnitTest();
             if ($ReflectionMethod->unitTestStatus === false) {
                 $this->unitTestStatus = false;
                 $this->unitTestLastError = $ReflectionMethod->unitTestLastError;
@@ -149,7 +144,8 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
     }
 
     /**
-     * @since UT.00.03
+     * 
+     * @since UT.00.01
      * @var array
      */
     private $fileMethods = [];

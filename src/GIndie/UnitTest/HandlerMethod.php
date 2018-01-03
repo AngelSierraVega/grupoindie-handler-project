@@ -1,41 +1,41 @@
 <?php
+
 /**
- * UnitTest - ReflectionMethod
+ * UnitTest - HandlerMethod
  */
 
-namespace GIndie\UnitTest\ClassTest;
+namespace GIndie\UnitTest;
 
 /**
- * Description of ReflectionMethod
+ * Description of HandlerMethod
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @copyright (C) 2017 Angel Sierra Vega. Grupo INDIE.
+ * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ *
  * @package UnitTest
- * @version UT.00.00 17-12-28 Created class
+ *
+ * @version UT.00.00 18-01-03 Class created.
  * @edit UT.00.01
- * - Functional class
- * @edit UT.00.02
- * @edit UT.00.03 18-01-01
- * - Implemented interterface and trait
- * @edit UT.00.04
- * - handle unit test funcionality
- * @edit UT.00.05 18-01-02
- * - Removed deprecated funcionality
- * - Added @ut_factory funcionality
+ * - Added code from GIndie\UnitTest\ClassTest\ReflectionMethod
+ * - Updated traits
+ * - Interfaces implemented.
  */
-class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
+class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandler, Handler\ReflectionInterface
 {
 
     /**
-     * @since UT.00.03
+     * 
+     * @since UT.00.01
      */
-    use \GIndie\UnitTest\ClassTest\ReflectionCommon;
-
+    use Handler\Common;
+    use Handler\ReflectionCommon;
+    
     /**
+     * 
+     * @since UT.00.01
      * 
      * @param type $class
      * @param type $name
-     * @since UT.00.03
      */
     public function __construct($class, $name)
     {
@@ -49,9 +49,8 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
      * 
      * @param \ReflectionMethod $Method
      * @return string Description
-     * @edit UT.00.05
      */
-    public function validate()
+    public function execUnitTest()
     {
         ob_start();
         ?>
@@ -113,7 +112,7 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
     }
 
     /**
-     * @since UT.00.03
+     * @since UT.00.01
      * return array
      */
     public function requiredTags()
@@ -123,10 +122,10 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
 
     /**
      * 
+     * @since UT.00.01
+     * 
      * @param type $data
      * @return string
-     * @since UT.00.04
-     * @edit UT.00.05
      */
     private function handleTest($utKey, $utData)
     {
@@ -138,14 +137,15 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
                 $result = $this->invokeArgs(null, $parameters) . "";
                 break;
             case $this->isConstructor():
-                $classTest = $this->class;
-                $classTest = new \GIndie\UnitTest\ClassTest\ReflectionClass($classTest);
+                $classTest = new HandlerClass($this->class);
+                //\var_dump($parameters);
+                //\var_dump(["attr1"=>"val1","attr2","attr3"=>null,null=>"attr4"]);
                 $result = $classTest->newInstance($parameters);
             default:
                 $class = $utData["factory"]["class"];
                 $method = $utData["factory"]["method"];
                 $testId = $utData["factory"]["testId"];
-                $factory = new \GIndie\UnitTest\ClassTest\ReflectionMethod($class, $method);
+                $factory = new self($class, $method);
                 $docComments = $factory->getDocComments();
                 $factory = $factory->invokeArgs(null, $docComments["unit_test"][$testId]["parameters"]);
                 $result = $this->invokeArgs($factory, $parameters) . "";
@@ -177,9 +177,10 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
 
     /**
      * 
+     * @since UT.00.01
+     * 
      * @param array $parameters
      * @return string
-     * @since UT.00.04
      */
     private function handleHTMLParameters(array $parameters)
     {
@@ -198,5 +199,4 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
         }
         return $rtnStr;
     }
-
 }

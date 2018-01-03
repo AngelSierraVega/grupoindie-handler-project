@@ -4,7 +4,7 @@
  * UnitTest - DML
  */
 
-namespace GIndie\UnitTest\Platform\Module\ScriptGenerator;
+namespace GIndie\UnitTest\Plugins\Platform\Module\ScriptGenerator;
 
 /**
  * Description of DML
@@ -19,7 +19,7 @@ namespace GIndie\UnitTest\Platform\Module\ScriptGenerator;
  * - Extend class from \GIndie\UnitTest\Platform\Module\AbstractModule.
  * - Implemented extention methods.
  */
-class DML extends \GIndie\UnitTest\Platform\Module\AbstractModule
+class DML extends \GIndie\UnitTest\Plugins\Platform\Module\AbstractModule
 {
     
     /**
