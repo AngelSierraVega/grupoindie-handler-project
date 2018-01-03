@@ -18,15 +18,21 @@ namespace GIndie\UnitTest\Parser;
  * @edit UT.00.01
  * - Extend from \GIndie\Common\Parser\DocComment
  * - Created methods
+ * @edit UT.00.02 18-01-02
+ * - parse @ut_factory
+ * - Created method: parseFactory()
  */
 class DocComment extends \GIndie\Common\Parser\DocComment
 {
 
     /**
      * 
+     * @since UT.00.01
+     * 
      * @param type $tagname
      * @param type $value
-     * @since UT.00.01
+     * 
+     * @edit UT.00.02
      */
     protected function parseTag($tagname, $value)
     {
@@ -40,10 +46,34 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                 $arrayTmp = \explode(" ", $value);
                 $this->parsed["unit_test"][\array_shift($arrayTmp)]["parameters"] = $this->parseUnitTestParameters($arrayTmp);
                 break;
+            case "ut_factory":
+                $arrayTmp = \explode(" ", $value);
+                $this->parsed["unit_test"][\array_shift($arrayTmp)]["factory"] = $this->parseFactory($arrayTmp);
+                break;
             default:
                 parent::parseTag($tagname, $value);
                 break;
         }
+    }
+    
+    /**
+     * 
+     * @since UT.00.02
+     * 
+     * @param array $data
+     * @return array
+     */
+    private function parseFactory(array $data){
+        $method = $data[0];
+        $method = \explode("::", $method);
+        if(\sizeof($method)>0){
+            $class = $method[0];
+            $method = $method[1];
+        }else{
+            $class = null;
+            $method = $method[0];
+        }
+        return ["class"=>$class,"method"=>$method,"testId"=>$data[1]];
     }
 
     /**

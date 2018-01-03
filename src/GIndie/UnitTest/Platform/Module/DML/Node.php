@@ -21,6 +21,8 @@ namespace GIndie\UnitTest\Platform\Module\DML;
  * - Extended from ClassTestModule
  * - Implemented abstract className()
  * - Added constant NAME
+ * @edit UT.00.02 18-01-02
+ * - Deprecated class
  */
 class Node extends ClassTestModule
 {

@@ -56,6 +56,9 @@ namespace GIndie\UnitTest;
  * - Moved out var: $requiredClassTags, $docComments, $testTitle
  * - Update var: $reflectionClass
  * - Updated method: __construct()
+ * 
+ * @deprecated since UT.00.06
+ * - Deprecated class in favor of ClassTest\ReflectionClass
  */
 class ClassTest
 {
@@ -118,9 +121,8 @@ class ClassTest
     final public function __construct($classname)
     {
         $this->reflectionClass = new ClassTest\ReflectionClass($classname);
-        
     }
-    
+
     /**
      * @since UT.00.06
      * @return string
@@ -144,6 +146,18 @@ class ClassTest
 //        $out .= $this->reflectionClass->validateDocComments();
 //        $out .= $this->reflectionClass->validateMethods();
         return $out;
+    }
+    
+    
+    public $lastError;
+    
+    public $unitTestPublicFileMethodsStatus;
+
+    public function unitTestPublicFileMethods()
+    {
+        $this->reflectionClass->validateMethods();
+        
+        $this->unitTestPublicFileMethodsStatus = "@todo";
     }
 
 }

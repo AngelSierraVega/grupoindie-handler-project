@@ -21,6 +21,9 @@ namespace GIndie\UnitTest\ClassTest;
  * @edit UT.00.03
  * @edit UT.00.04 17-12-29
  * - Implemented interterface and trait
+ * @edit UT.00.05 18-01-02
+ * - var fileMethods skips protected methods, public __toString() and constructor if abstract class
+ * - validateMethods(): Visibility to public
  */
 class ReflectionClass extends \ReflectionClass implements ReflectionInterface
 {
@@ -34,7 +37,7 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
      * 
      * @since UT.00.02
      * @param type $argument
-     * @edit UT.00.03
+     * @edit UT.00.05
      */
     public function __construct($argument)
     {
@@ -44,7 +47,20 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
             switch ($this->getFileName())
             {
                 case $ReflectionMethod->getFileName():
-                    $this->fileMethods[] = new ReflectionMethod($this->getName(), $ReflectionMethod->name);
+                    switch (true)
+                    {
+                        case (\strcmp($ReflectionMethod->name, "__toString") == 0):
+                        case $ReflectionMethod->isProtected():
+                        case ($this->isAbstract() && $ReflectionMethod->isConstructor()):
+                            break;
+//                        case $this->isAbstract():
+//                            if ($ReflectionMethod->isConstructor()) {
+//                                break;
+//                            }
+                        default:
+                            $this->fileMethods[] = new ReflectionMethod($this->getName(), $ReflectionMethod->name);
+                            break;
+                    }
                     break;
             }
         }
@@ -116,12 +132,18 @@ class ReflectionClass extends \ReflectionClass implements ReflectionInterface
      * 
      * @return string Description
      * @edit UT.00.04
+     * @edit UT.00.05
      */
-    private function validateMethods()
+    public function validateMethods()
     {
+        $this->unitTestStatus = true;
         $rtnStr = "";
         foreach ($this->fileMethods as $ReflectionMethod) {//ReflectionMethod::IS_PROTECTED
             $rtnStr .= $ReflectionMethod->validate();
+            if ($ReflectionMethod->unitTestStatus === false) {
+                $this->unitTestStatus = false;
+                $this->unitTestLastError = $ReflectionMethod->unitTestLastError;
+            }
         }
         return $rtnStr;
     }

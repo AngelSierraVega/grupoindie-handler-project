@@ -19,6 +19,9 @@ namespace GIndie\UnitTest\ClassTest;
  * - Implemented interterface and trait
  * @edit UT.00.04
  * - handle unit test funcionality
+ * @edit UT.00.05 18-01-02
+ * - Removed deprecated funcionality
+ * - Added @ut_factory funcionality
  */
 class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
 {
@@ -46,7 +49,7 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
      * 
      * @param \ReflectionMethod $Method
      * @return string Description
-     * @edit UT.00.04
+     * @edit UT.00.05
      */
     public function validate()
     {
@@ -72,21 +75,21 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
         <table class="table table-bordered">
             <caption><?= $this->getName(); ?></caption>
             <tr>
-        <?= $this->validateTag("description", "2"); ?>
+                <?= $this->validateTag("description", "2"); ?>
                 <?= $this->validateTag("link", "1"); ?>
             </tr>
             <tr>
-        <?= $this->validateTag("return"); ?>
+                <?= $this->validateTag("return"); ?>
                 <?= $this->validateTag("since"); ?>
                 <?= $this->validateTag("version"); ?>
             </tr>
-                <?php
-                if (isset($this->docComments["edit"])) {
-                    foreach ($this->docComments["edit"] as $value) {
-                        echo "<tr><td colspan='5'><sup>@edit</sup> {$value}</td></tr>";
-                    }
+            <?php
+            if (isset($this->docComments["edit"])) {
+                foreach ($this->docComments["edit"] as $value) {
+                    echo "<tr><td colspan='5'><sup>@edit</sup> {$value}</td></tr>";
                 }
-                ?>
+            }
+            ?>
         </table>
         <table class="table table-bordered">
             <caption>Unit test for <?= $this->getName(); ?></caption>
@@ -96,44 +99,17 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
                 <th>Expected</th>
                 <th>Result</th>
             </tr>
-        <?php
-        foreach ($this->docComments["unit_test"] as $utKey => $utData) {
-            echo $this->handleTest($utKey, $utData);
-        }
-        ?>
-        </table>
             <?php
-            $out = ob_get_contents();
-            ob_end_clean();
-            return $out;
-
-            $Method = $this;
-            $rtnStr = "";
-            switch ($this->getFileName())
-            {
-                case $Method->isConstructor():
-                    break;
-                case $Method->getFileName():
-                    $comment = \GIndie\Common\Parser\DocComment::parseFromString($Method->getDocComment());
-                    \ob_start();
-                    ?>
-                <span style="font-size: 1.1em; font-weight: bolder;"><?= $Method->name; ?></span><br>
-                <?php
-                if (isset($comment["return"])) {
-                    ?>
-                    <span style="font-size: 0.9em;">@return <?= $comment["return"]; ?></span><br>
-                    <?php
-                } else {
-                    ?>
-                    <span style="color:red;">@return tag must added to comment</span><br>
-                    <?php
-                }
-                $out = \ob_get_contents();
-                \ob_end_clean();
-                return $out;
-                break;
-        }
-        return $rtnStr;
+            $this->unitTestStatus = true;
+            foreach ($this->docComments["unit_test"] as $utKey => $utData) {
+                echo $this->handleTest($utKey, $utData);
+            }
+            ?>
+        </table>
+        <?php
+        $out = ob_get_contents();
+        ob_end_clean();
+        return $out;
     }
 
     /**
@@ -150,6 +126,7 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
      * @param type $data
      * @return string
      * @since UT.00.04
+     * @edit UT.00.05
      */
     private function handleTest($utKey, $utData)
     {
@@ -165,11 +142,28 @@ class ReflectionMethod extends \ReflectionMethod implements ReflectionInterface
                 $classTest = new \GIndie\UnitTest\ClassTest\ReflectionClass($classTest);
                 $result = $classTest->newInstance($parameters);
             default:
+                $class = $utData["factory"]["class"];
+                $method = $utData["factory"]["method"];
+                $testId = $utData["factory"]["testId"];
+                $factory = new \GIndie\UnitTest\ClassTest\ReflectionMethod($class, $method);
+                $docComments = $factory->getDocComments();
+                $factory = $factory->invokeArgs(null, $docComments["unit_test"][$testId]["parameters"]);
+                $result = $this->invokeArgs($factory, $parameters) . "";
+                break;
+        }
+
+        switch (true)
+        {
+            case (\strcmp($result, $expected) == 0):
+                break;
+            default:
+                $this->unitTestLastError = $this->name . "<br>Expected: {$expected}<br>Result: {$result}";
+                $this->unitTestStatus = false;
                 break;
         }
         ob_start();
         ?>
-        <tr <?= \strcmp($result, $expected) == 0 ? "class=\"success\"" : "class=\"danger\""; ?>>
+        <tr <?= $this->unitTestStatus ? "class=\"success\"" : "class=\"danger\""; ?>>
             <td><?= $utKey; ?></td>
             <td><?= $this->handleHTMLParameters($parameters); ?></td>
             <td><pre><?= \htmlspecialchars($expected); ?></pre></td>

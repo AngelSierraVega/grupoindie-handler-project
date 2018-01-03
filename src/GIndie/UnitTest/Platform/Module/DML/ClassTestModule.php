@@ -18,6 +18,9 @@ namespace GIndie\UnitTest\Platform\Module\DML;
  * @edit UT.00.01
  * - Abstract class, created abstract method className()
  * - Created method:  widgetReload()
+ * @edit UT.00.02 18-01-02
+ * - Deprecated class
+ * @deprecated since UT.00.02
  */
 abstract class ClassTestModule extends \GIndie\UnitTest\Platform\Module\AbstractModule
 {

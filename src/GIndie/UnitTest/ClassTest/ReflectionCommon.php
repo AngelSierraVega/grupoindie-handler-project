@@ -16,16 +16,21 @@ namespace GIndie\UnitTest\ClassTest;
  * @version UT.00.00 17-12-28 Created trait
  * @edit UT.00.01 17-12-29
  * - Functional trait.
+ * @edit UT.00.02 18-01-02
+ * - Revised/added vars
+ * - Added getDocComments()
  */
 trait ReflectionCommon
-{
-
+{ 
+    
     /**
      * 
-     * @since UT.00.01
-     * @var array|null 
+     * @since UT.00.02
+     * @return array
      */
-    private $docComments;
+    public function getDocComments(){
+        return $this->docComments;
+    }
 
     /**
      * @since UT.00.01
@@ -67,5 +72,29 @@ trait ReflectionCommon
             }
         }
     }
+    
+    /**
+     * 
+     * @since UT.00.01
+     * @var array|null 
+     * @edit UT.00.02
+     */
+    protected $docComments;
+    
+    /**
+     * Stores the status of the unit test for the method.
+     * 
+     * @since UT.00.02
+     * @var boolean|null 
+     */
+    public $unitTestStatus;
+    
+    /**
+     * Stores the last error of the unit test for the method.
+     * 
+     * @since UT.00.02
+     * @var string|null 
+     */
+    public $unitTestLastError;
 
 }
