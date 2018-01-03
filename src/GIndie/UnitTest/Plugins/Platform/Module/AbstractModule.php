@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UnitTest - AbstractModule
  *
@@ -21,6 +22,9 @@ namespace GIndie\UnitTest\Plugins\Platform\Module;
  * - Added code from Platform/dist/examples
  * @edit UT.00.02 18-01-02
  * - Implemented project test
+ * @edit UT.00.03 18-01-03
+ * - Moved out code to UnitTest\HandlerProject
+ * - Handle context widget
  */
 abstract class AbstractModule extends \GIndie\Platform\Controller\Module
 {
@@ -51,69 +55,31 @@ abstract class AbstractModule extends \GIndie\Platform\Controller\Module
      */
     abstract protected function projectUnitTest();
 
-
     /**
      * 
      * @since UT.00.02
      * @return \GIndie\Platform\View\Widget
+     * @edit UT.00.03
      */
     protected function widgetReload($id, $class, $selected)
     {
         switch ($id)
         {
             case "ii-i-i":
-//                $this->classTest = [];
-//                foreach ($this->projectUnitTest() as $classTest) {
-//                    $this->classTest[] = new \GIndie\UnitTest\ClassTest($classTest);
-//                }
-                return new \GIndie\Platform\View\Widget("Unit test on public file methods", false, $this->unitTestPublicFileMethods());
+                $HandlerClass = new \GIndie\UnitTest\HandlerClass($this->projectUnitTest());
+                $HandlerClass = $HandlerClass->newInstanceArgs();
+                $HandlerClass->execUnitTest();
+                
+                $widget = new \GIndie\Platform\View\Widget($HandlerClass->formattedTitle(), false, $HandlerClass->unitTestResult);
+                if($HandlerClass->unitTestStatus === true){
+                    $widget->setContext("success");
+                }else{
+                    $widget->setContext("warning");
+                }
+                return $widget;
             default:
                 return parent::widgetReload($id, $class, $selected);
         }
-    }
-
-    /**
-     * 
-     * @since UT.00.02
-     * @return string
-     */
-    private function unitTestPublicFileMethods()
-    {
-        $classTest0 = $this->projectUnitTest();
-        $projectHandler = new $classTest0();
-//        $this->projectUnitTest();
-//        \var_dump(static::projectUnitTest());
-        ob_start();
-        ?>
-        <table class="table table-bordered">
-            <caption>unitTestPublicFileMethods</caption>
-            <tr>
-                <th class='info'>Class</th>
-                <th class='info'>Status</th>
-            </tr>
-            <?php
-            foreach ($projectHandler->projectClasses() as $classTest) {
-                $classTest = new \GIndie\UnitTest\HandlerClass($classTest);
-                $classTest->execUnitTest();
-                switch (true)
-                {
-                    case \is_string($classTest->unitTestStatus):
-                        echo "<tr class='warning'><td>{$classTest->formattedTitle()}</td><td>{$classTest->unitTestStatus}</td></tr>";
-                        break;
-                    case ($classTest->unitTestStatus === true):
-                        echo "<tr class='success'><td>{$classTest->formattedTitle()}</td><td>Success</td></tr>";
-                        break;
-                    default:
-                        echo "<tr class='danger'><td>{$classTest->formattedTitle()}</td><td>{$classTest->unitTestLastError}</td></tr>";
-                        break;
-                }
-            }
-            ?>
-        </table>
-        <?php
-        $out = ob_get_contents();
-        ob_end_clean();
-        return $out;
     }
 
 }

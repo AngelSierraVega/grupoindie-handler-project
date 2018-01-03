@@ -19,6 +19,8 @@ namespace GIndie\UnitTest\Plugins\Platform;
  * - Added code from Platform/dist/examples
  * @edit UT.00.02 18-01-02
  * - Commented old modules
+ * @edit UT.00.03 18-01-03
+ * - Added module for HTML5
  */
 class UnitTest extends \GIndie\Platform\Instance
 {
@@ -30,16 +32,12 @@ class UnitTest extends \GIndie\Platform\Instance
 
     /**
      * @since UT.00.01
-     * @edit UT.00.02
+     * @edit UT.00.03
      */
     public function config()
     {
         $this->setModule(Module\ScriptGenerator\DML::class, "Script Generator");
-//        $this->setModule(Module\DML\Project::class, "DML");
-//        $this->setModule(Module\DML\Node::class, "DML");
-//        $this->setModule(Module\DML\NodeAbs::class, "DML");
-//        $this->setModule(Module\DML\Tag::class, "DML");
-//        $this->setModule(Module\DML\TagAbs::class, "DML");
+        $this->setModule(Module\ScriptGenerator\HTML5::class, "Script Generator");
     }
 
 }

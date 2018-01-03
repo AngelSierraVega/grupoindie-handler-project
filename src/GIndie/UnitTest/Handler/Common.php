@@ -21,9 +21,19 @@ namespace GIndie\UnitTest\Handler;
  * - Added $unitTestResult 
  * - Moved out getTitle(), getDocComments(), validateTag(), $docComments
  * - Moved in validateDocComments()
+ * @edit UT.00.03
+ * - Added $unitTestCount
  */
 trait Common
 {
+    
+    /**
+     * The number of unit test executed.
+     * 
+     * @since UT.00.03
+     * @var int 
+     */
+    public $unitTestCount = 0;
 
     /**
      * The status of the unit test.

@@ -18,6 +18,8 @@ namespace GIndie\UnitTest;
  * - Added code from GIndie\UnitTest\ClassTest\ReflectionClass
  * - Updated traits
  * - Interfaces implemented.
+ * @edit UT.00.02
+ * - $unitTestCount implemented
  */
 class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler, Handler\ReflectionInterface
 {
@@ -33,6 +35,7 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
      * 
      * @since UT.00.01
      * @param type $argument
+     * @todo verify deprecated code
      */
     public function __construct($argument)
     {
@@ -48,10 +51,14 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
                         case $ReflectionMethod->isProtected():
                         case ($this->isAbstract() && $ReflectionMethod->isConstructor()):
                             break;
-//                        case $this->isAbstract():
-//                            if ($ReflectionMethod->isConstructor()) {
-//                                break;
-//                            }
+                        /**
+                         * @todo verify deprecated code
+                         * case $this->isAbstract():
+                            if ($ReflectionMethod->isConstructor()) {
+                                break;
+                            }
+                         */
+                        
                         default:
                             $this->fileMethods[] = new HandlerMethod($this->getName(), $ReflectionMethod->name);
                             break;
@@ -138,6 +145,8 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
             if ($ReflectionMethod->unitTestStatus === false) {
                 $this->unitTestStatus = false;
                 $this->unitTestLastError = $ReflectionMethod->unitTestLastError;
+            } else {
+                $this->unitTestCount += $ReflectionMethod->unitTestCount;
             }
         }
         return $rtnStr;

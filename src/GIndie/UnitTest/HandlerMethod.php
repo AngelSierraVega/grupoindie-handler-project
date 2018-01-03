@@ -1,5 +1,4 @@
 <?php
-
 /**
  * UnitTest - HandlerMethod
  */
@@ -19,6 +18,9 @@ namespace GIndie\UnitTest;
  * - Added code from GIndie\UnitTest\ClassTest\ReflectionMethod
  * - Updated traits
  * - Interfaces implemented.
+ * @edit UT.00.02
+ * - $unitTestCount implemented
+ * - Implemented error on Unit Test not defined
  */
 class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandler, Handler\ReflectionInterface
 {
@@ -29,7 +31,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
      */
     use Handler\Common;
     use Handler\ReflectionCommon;
-    
+
     /**
      * 
      * @since UT.00.01
@@ -49,6 +51,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
      * 
      * @param \ReflectionMethod $Method
      * @return string Description
+     * @edit UT.00.02
      */
     public function execUnitTest()
     {
@@ -100,8 +103,13 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
             </tr>
             <?php
             $this->unitTestStatus = true;
-            foreach ($this->docComments["unit_test"] as $utKey => $utData) {
-                echo $this->handleTest($utKey, $utData);
+            if (isset($this->docComments["unit_test"])) {
+                foreach ($this->docComments["unit_test"] as $utKey => $utData) {
+                    echo $this->handleTest($utKey, $utData);
+                }
+            } else {
+                $this->unitTestStatus = false;
+                $this->unitTestLastError = "Unit test not declared for method " . $this->name;
             }
             ?>
         </table>
@@ -126,6 +134,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
      * 
      * @param type $data
      * @return string
+     * @edit UT.00.02
      */
     private function handleTest($utKey, $utData)
     {
@@ -151,7 +160,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
                 $result = $this->invokeArgs($factory, $parameters) . "";
                 break;
         }
-
+        $this->unitTestCount++;
         switch (true)
         {
             case (\strcmp($result, $expected) == 0):
@@ -199,4 +208,5 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
         }
         return $rtnStr;
     }
+
 }
