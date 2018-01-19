@@ -21,6 +21,8 @@ namespace GIndie\UnitTest\Plugins\Platform;
  * - Commented old modules
  * @edit UT.00.03 18-01-03
  * - Added module for HTML5
+ * @edit UT.00.04 18-01-18
+ * - Added module for Bootstrap3 and HTML5Form
  */
 class UnitTest extends \GIndie\Platform\Instance
 {
@@ -38,6 +40,8 @@ class UnitTest extends \GIndie\Platform\Instance
     {
         $this->setModule(Module\ScriptGenerator\DML::class, "Script Generator");
         $this->setModule(Module\ScriptGenerator\HTML5::class, "Script Generator");
+        $this->setModule(Module\ScriptGenerator\HTML5Form::class, "Script Generator");
+        $this->setModule(Module\ScriptGenerator\Bootstrap3::class, "Script Generator");
     }
 
 }

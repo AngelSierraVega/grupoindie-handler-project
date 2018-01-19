@@ -147,8 +147,6 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
                 break;
             case $this->isConstructor():
                 $classTest = new HandlerClass($this->class);
-                //\var_dump($parameters);
-                //\var_dump(["attr1"=>"val1","attr2","attr3"=>null,null=>"attr4"]);
                 $result = $classTest->newInstance($parameters);
             default:
                 $class = $utData["factory"]["class"];
@@ -166,7 +164,9 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
             case (\strcmp($result, $expected) == 0):
                 break;
             default:
-                $this->unitTestLastError = $this->name . "<br>Expected: {$expected}<br>Result: {$result}";
+                $this->unitTestLastError = $this->name .
+                        "<br>Expected: <pre>" . \htmlspecialchars($expected) . "</pre>" .
+                        "Result: <pre>" . \htmlspecialchars($result) . "</pre>";
                 $this->unitTestStatus = false;
                 break;
         }

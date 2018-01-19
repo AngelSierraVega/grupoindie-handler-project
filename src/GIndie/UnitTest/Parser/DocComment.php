@@ -44,7 +44,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                 break;
             case "ut_params":
                 $arrayTmp = \explode(" ", $value);
-                $this->parsed["unit_test"][\array_shift($arrayTmp)]["parameters"] = $this->parseUnitTestParameters($arrayTmp);
+                $this->parsed["unit_test"][\array_shift($arrayTmp)]["parameters"] = $this->parseParameters(\join(" ", $arrayTmp));
                 break;
             case "ut_factory":
                 $arrayTmp = \explode(" ", $value);
@@ -55,7 +55,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                 break;
         }
     }
-    
+
     /**
      * 
      * @since UT.00.02
@@ -63,17 +63,18 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * @param array $data
      * @return array
      */
-    private function parseFactory(array $data){
+    private function parseFactory(array $data)
+    {
         $method = $data[0];
         $method = \explode("::", $method);
-        if(\sizeof($method)>0){
+        if (\sizeof($method) > 0) {
             $class = $method[0];
             $method = $method[1];
-        }else{
+        } else {
             $class = null;
             $method = $method[0];
         }
-        return ["class"=>$class,"method"=>$method,"testId"=>$data[1]];
+        return ["class" => $class, "method" => $method, "testId" => $data[1]];
     }
 
     /**
@@ -84,6 +85,106 @@ class DocComment extends \GIndie\Common\Parser\DocComment
     private function parseUnitTestString(array $data)
     {
         return \substr(\join(" ", $data), 1, -1);
+    }
+
+    private function parseParamString($string)
+    {
+        return \strstr(\substr($string, 1),'"',true);
+    }
+
+    private function parseParamTag($string)
+    {
+        return \substr($string, 0, \strstr('>', $string));
+    }
+
+    /**
+     * 
+     * @param string $string
+     * @return string
+     */
+    private function parseParamArray($string)
+    {
+        return \strstr(\substr($string, 1),']',true);
+        //$rtnArray = [];
+//        switch ($string[1])
+//        {
+//            case '[':
+//                return $this->parseParamArray($string);
+//            default:
+//                return \strstr(\substr($string, 1),']',true);
+//        }
+    }
+    
+    private function parseArrayElements($string){
+        
+    }
+
+    /**
+     * 
+     * @param string $string
+     * @return array
+     */
+    private function parseParameters($string)
+    {
+        //\var_dump($string);
+        $rtnArray = [];
+        while (\strlen($string) > 0) {
+            switch (\substr($string, 0, 1))
+            {
+                case '"':
+                    $parsedString = $this->parseParamString($string);
+                    $rtnArray[] = $parsedString;
+                    $string = \substr($string, \strlen($parsedString)+2);
+                    break;
+                case ' ':
+                    $string = \substr($string, 1);
+                    break;
+                case ',':
+                    $string = \substr($string, 1);
+                    break;
+                case '[':
+                    //\var_dump($string);
+                    $parsedString = $this->parseParamArray($string);
+                    //\var_dump($parsedString);
+                    $string = \substr($string, \strlen($parsedString)+2);
+                    //\var_dump($string);
+                    //$string = "";
+//                    $parsedString = $this->parseParamArray(\substr($string, 1));
+//                    $string = \substr($string, \strlen($parsedString));
+                    
+//                    $tmpArray = \explode(",", $parsedString);
+//                    foreach ($tmpArray as $tmpExploded) {
+//                        \var_dump($this->parseParameters($tmpExploded))
+//                    }
+                    
+                /**
+                 * @todo Validation of =>
+                 */
+                    if (\strstr($parsedString, "=>") !== false) {
+                        $tmpArray = [];
+                        foreach (\explode(",", $parsedString) as $tmpExploded) {
+                            $tmpExploded2 = \explode("=>", $tmpExploded);
+                            $key = $this->parseParameters($tmpExploded2[0]);
+                            $key = $key[0];
+                            $value = $this->parseParameters($tmpExploded2[1]);
+                            $value = $value[0];
+                            $tmpArray[$key] = $value;
+                        }
+                        $rtnArray[] = $tmpArray;
+                    } else {
+                        $rtnArray[] = $this->parseParameters($parsedString);
+                        //$rtnArray[] = \explode(",", $parsedString);
+                    }
+//                    $string = $this->parseParameters($string);
+                    //$string = $string[0];
+                    //\var_dump($string);
+                    break;
+                default:
+                    break;
+            }
+        }
+        //\var_dump($rtnArray);
+        return $rtnArray;
     }
 
     /**
@@ -101,35 +202,13 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                     $rtnArray[] = "null";
                     //\var_dump("ENTRO para " .$tmp );
                     break;
-                case \strpos($tmp, '"'):
-                    $rtnArray[] = \substr($tmp, 1, -1);
-                    break;
-                case \strpos($tmp, '['):
-                    $tmpArray = \explode(",", \substr($tmp, 1, -1));
-                    /**
-                     * @todo Validation of =>
-                     */
-                    if (\strstr($tmp, "=>") !== false) {
-                        foreach ($tmpArray as $tmpExploded) {
-                            $tmpExploded2 = \explode("=>", $tmpExploded);
-                            $key = $this->parseUnitTestParameters([\array_shift($tmpExploded2)]);
-                            $key = $key[0];
-                            $value = $this->parseUnitTestParameters($tmpExploded2);
-                            $value = \join("", $value);
-                            $rtnArray[] = [$key => $value];
-                        }
-                    } else {
-                        $rtnArray[] = $this->parseUnitTestParameters($tmpArray);
-                    }
-
-                    break;
 
                 default:
                     $rtnArray[] = $tmp;
                     break;
             }
         }
-        
+
         return $rtnArray;
     }
 
