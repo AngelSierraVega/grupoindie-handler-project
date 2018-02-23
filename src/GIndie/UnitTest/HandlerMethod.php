@@ -21,6 +21,8 @@ namespace GIndie\UnitTest;
  * @edit UT.00.02
  * - $unitTestCount implemented
  * - Implemented error on Unit Test not defined
+ * @edit UT.00.03 18-02-??
+ * - Updated handleTest()
  */
 class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandler, Handler\ReflectionInterface
 {
@@ -105,6 +107,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
             $this->unitTestStatus = true;
             if (isset($this->docComments["unit_test"])) {
                 foreach ($this->docComments["unit_test"] as $utKey => $utData) {
+                    //\var_dump($this->docComments["unit_test"]);
                     echo $this->handleTest($utKey, $utData);
                 }
             } else {
@@ -134,7 +137,8 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
      * 
      * @param type $data
      * @return string
-     * @edit UT.00.02
+     * @edit UT.00.03
+     * - Handle constructor and default methods
      */
     private function handleTest($utKey, $utData)
     {
@@ -148,14 +152,27 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
             case $this->isConstructor():
                 $classTest = new HandlerClass($this->class);
                 $result = $classTest->newInstance($parameters);
+                break;
             default:
                 $class = $utData["factory"]["class"];
                 $method = $utData["factory"]["method"];
                 $testId = $utData["factory"]["testId"];
-                $factory = new self($class, $method);
-                $docComments = $factory->getDocComments();
-                $factory = $factory->invokeArgs(null, $docComments["unit_test"][$testId]["parameters"]);
-                $result = $this->invokeArgs($factory, $parameters) . "";
+                switch ($method)
+                {
+                    case "__construct":
+                        $classTest = new HandlerClass($this->class);
+                        $docComments = $classTest->getDocComments();
+                        $objectTest = $classTest->newInstance($docComments["unit_test"][$testId]["parameters"]);
+                        $result = "@todo";
+                        $result = $this->invokeArgs($objectTest, $parameters) . "";
+                        break;
+                    default:
+                        $factory = new self($class, $method);
+                        $docComments = $factory->getDocComments();
+                        $factory = $factory->invokeArgs(null, $docComments["unit_test"][$testId]["parameters"]);
+                        $result = $this->invokeArgs($factory, $parameters) . "";
+                        break;
+                }
                 break;
         }
         $this->unitTestCount++;

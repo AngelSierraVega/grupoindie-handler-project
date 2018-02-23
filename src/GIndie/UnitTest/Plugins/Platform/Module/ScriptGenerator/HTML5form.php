@@ -34,7 +34,7 @@ class HTML5form extends \GIndie\UnitTest\Plugins\Platform\Module\AbstractModule
      */
     protected function projectUnitTest()
     {
-        return \GIndie\ScriptGenerator\HTML5form\Plugins\UnitTest\HandlerProject::class;
+        return \GIndie\ScriptGenerator\HTML5\Plugins\UnitTest\HandlerProjectHTML5form::class;
     }
 
 }

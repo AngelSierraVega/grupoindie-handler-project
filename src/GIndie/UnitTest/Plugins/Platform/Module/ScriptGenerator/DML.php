@@ -21,7 +21,7 @@ namespace GIndie\UnitTest\Plugins\Platform\Module\ScriptGenerator;
  */
 class DML extends \GIndie\UnitTest\Plugins\Platform\Module\AbstractModule
 {
-    
+
     /**
      * 
      * @since UT.00.01
@@ -34,7 +34,7 @@ class DML extends \GIndie\UnitTest\Plugins\Platform\Module\AbstractModule
      */
     protected function projectUnitTest()
     {
-        return \GIndie\ScriptGenerator\DML\UnitTest::class;
+        return \GIndie\ScriptGenerator\DML\Plugins\UnitTest\HandlerProject::class;
     }
 
 }

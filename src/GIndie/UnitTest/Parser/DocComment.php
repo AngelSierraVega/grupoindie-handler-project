@@ -21,6 +21,8 @@ namespace GIndie\UnitTest\Parser;
  * @edit UT.00.02 18-01-02
  * - parse @ut_factory
  * - Created method: parseFactory()
+ * @edit UT.00.03 18-01-20
+ * - Updated parseFactory()
  */
 class DocComment extends \GIndie\Common\Parser\DocComment
 {
@@ -62,12 +64,14 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * 
      * @param array $data
      * @return array
+     * @edit UT.00.03
+     * - Corrected bug
      */
     private function parseFactory(array $data)
     {
         $method = $data[0];
         $method = \explode("::", $method);
-        if (\sizeof($method) > 0) {
+        if (\count($method) > 1) {
             $class = $method[0];
             $method = $method[1];
         } else {
@@ -87,11 +91,23 @@ class DocComment extends \GIndie\Common\Parser\DocComment
         return \substr(\join(" ", $data), 1, -1);
     }
 
+    /**
+     * 
+     * @param string $string
+     * @return string
+     * @since UT.00.03
+     */
     private function parseParamString($string)
     {
         return \strstr(\substr($string, 1),'"',true);
     }
 
+    /**
+     * 
+     * @param string $string
+     * @return string
+     * @since UT.00.03
+     */
     private function parseParamTag($string)
     {
         return \substr($string, 0, \strstr('>', $string));
@@ -101,32 +117,22 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * 
      * @param string $string
      * @return string
+     * @since UT.00.03
      */
     private function parseParamArray($string)
     {
         return \strstr(\substr($string, 1),']',true);
-        //$rtnArray = [];
-//        switch ($string[1])
-//        {
-//            case '[':
-//                return $this->parseParamArray($string);
-//            default:
-//                return \strstr(\substr($string, 1),']',true);
-//        }
     }
     
-    private function parseArrayElements($string){
-        
-    }
 
     /**
      * 
      * @param string $string
      * @return array
+     * @since UT.00.03
      */
     private function parseParameters($string)
     {
-        //\var_dump($string);
         $rtnArray = [];
         while (\strlen($string) > 0) {
             switch (\substr($string, 0, 1))
@@ -143,19 +149,8 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                     $string = \substr($string, 1);
                     break;
                 case '[':
-                    //\var_dump($string);
                     $parsedString = $this->parseParamArray($string);
-                    //\var_dump($parsedString);
                     $string = \substr($string, \strlen($parsedString)+2);
-                    //\var_dump($string);
-                    //$string = "";
-//                    $parsedString = $this->parseParamArray(\substr($string, 1));
-//                    $string = \substr($string, \strlen($parsedString));
-                    
-//                    $tmpArray = \explode(",", $parsedString);
-//                    foreach ($tmpArray as $tmpExploded) {
-//                        \var_dump($this->parseParameters($tmpExploded))
-//                    }
                     
                 /**
                  * @todo Validation of =>
@@ -173,17 +168,12 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                         $rtnArray[] = $tmpArray;
                     } else {
                         $rtnArray[] = $this->parseParameters($parsedString);
-                        //$rtnArray[] = \explode(",", $parsedString);
                     }
-//                    $string = $this->parseParameters($string);
-                    //$string = $string[0];
-                    //\var_dump($string);
                     break;
                 default:
                     break;
             }
         }
-        //\var_dump($rtnArray);
         return $rtnArray;
     }
 
@@ -200,7 +190,6 @@ class DocComment extends \GIndie\Common\Parser\DocComment
             {
                 case \strcmp($tmp, "null"):
                     $rtnArray[] = "null";
-                    //\var_dump("ENTRO para " .$tmp );
                     break;
 
                 default:
@@ -208,7 +197,6 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                     break;
             }
         }
-
         return $rtnArray;
     }
 
