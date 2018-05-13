@@ -1,9 +1,6 @@
 <?php
-/**
- * UnitTest - HandlerClass
- */
 
-namespace GIndie\UnitTest;
+namespace GIndie\ProjectHandler\Handler;
 
 /**
  * Description of HandlerClass
@@ -11,29 +8,36 @@ namespace GIndie\UnitTest;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
+ * @package ProjectHandler
  *
- * @version UT.00.00 18-01-03 Class created.
- * @edit UT.00.01
+ * @since 18-01-03
+ * @edit 18-01-03
  * - Added code from GIndie\UnitTest\ClassTest\ReflectionClass
  * - Updated traits
  * - Interfaces implemented.
- * @edit UT.00.02
  * - $unitTestCount implemented
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * - Upgraded uses and implementations
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
-class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler, Handler\ReflectionInterface
+class HandlerClass extends \ReflectionClass implements InterfaceHandler, ReflectionInterface
 {
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
+     * @edit 18-05-13
      */
-    use Handler\Common;
-    use Handler\ReflectionCommon;
+    use Common;
+    use ReflectionCommon;
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @param type $argument
      * @todo verify deprecated code
      */
@@ -70,7 +74,7 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @return array
      */
     public function requiredTags()
@@ -80,7 +84,7 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @return string
      */
     public function validate()
@@ -132,7 +136,7 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
     /**
      * Executes a method validation of the reflectionClass.
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * 
      * @return string Description
      */
@@ -154,7 +158,7 @@ class HandlerClass extends \ReflectionClass implements Handler\InterfaceHandler,
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @var array
      */
     private $fileMethods = [];

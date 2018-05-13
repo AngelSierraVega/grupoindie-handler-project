@@ -4,13 +4,15 @@
 <#if licenseFirst??>
 ${licenseFirst}
 </#if>
-${licensePrefix}${project.displayName} - ${name}
+${licensePrefix}${project.displayName} - ${name} 
 ${licensePrefix?replace(" +$", "", "r")}
+${licensePrefix}@author Angel Sierra Vega <angel.sierra@grupoindie.com>
 ${licensePrefix}@copyright (C) ${date?date?string("yyyy")} Angel Sierra Vega. Grupo INDIE.
 ${licensePrefix?replace(" +$", "", "r")}
-${licensePrefix}@package UnitTest
+${licensePrefix}@package ProjectHandler
 ${licensePrefix?replace(" +$", "", "r")}
-${licensePrefix}@version UT.00.00 ${date?date?string("yy-MM-dd")} Empty [class/trait/interface/file] created.
+${licensePrefix}@since ${date?date?string("yy-MM-dd")}
+${licensePrefix}@version UNDEFINED
 <#if licenseLast??>
 ${licenseLast}
 </#if>

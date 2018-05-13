@@ -1,21 +1,24 @@
 <?php
 
 /**
- * UnitTest - autoloader
+ * GI-ProjectHandler-DVLP - AutoloaderProjectHandler 
  *
- * @copyright (C) 2017 Angel Sierra Vega. Grupo INDIE.
+ * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
+ * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
- * @version UT.00.00 2017-12-25 File created
+ * @package ProjectHandler
+ *
+ * @since 18-05-13
+ * @edit 18-05-13
+ * - Added code from GI-SG-DML
+ * @version A1.00
  */
 
-namespace GIndie\UnitTest;
+namespace GIndie\ProjectHandler;
 
 /**
  * Autoloader function
- * 
- * @edit UT.00.012017-12-26 
- * - Copy from GICommon
+ * @since 18-05-13
  */
 \spl_autoload_register(function($className) {
     switch (\substr($className, 0, (\strlen(__NAMESPACE__) * 1)))
@@ -28,3 +31,10 @@ namespace GIndie\UnitTest;
             }
     }
 });
+
+
+/**
+ * Fixed requires
+ * @since 18-05-13
+ */
+require_once(__DIR__ . "\\ProjectHandler.php");

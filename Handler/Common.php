@@ -1,10 +1,6 @@
 <?php
 
-/**
- * UnitTest - Common
- */
-
-namespace GIndie\UnitTest\Handler;
+namespace GIndie\ProjectHandler\Handler;
 
 /**
  * Description of Common
@@ -12,25 +8,28 @@ namespace GIndie\UnitTest\Handler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
+ * @package ProjectHandler
  *
- * @version UT.00.00 18-01-03 Trait created.
- * @edit UT.00.01
+ * @since 18-01-03
  * - Added code from GIndie\UnitTest\ClassTest\ReflectionCommon
- * @edit UT.00.02
  * - Added $unitTestResult 
  * - Moved out getTitle(), getDocComments(), validateTag(), $docComments
  * - Moved in validateDocComments()
- * @edit UT.00.03
  * - Added $unitTestCount
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
 trait Common
 {
-    
+
     /**
      * The number of unit test executed.
      * 
-     * @since UT.00.03
+     * @since 18-01-03
      * @var int 
      */
     public $unitTestCount = 0;
@@ -38,7 +37,7 @@ trait Common
     /**
      * The status of the unit test.
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @var boolean|null 
      */
     public $unitTestStatus;
@@ -46,7 +45,7 @@ trait Common
     /**
      * The last error of the unit test.
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @var string|null 
      */
     public $unitTestLastError;
@@ -54,14 +53,14 @@ trait Common
     /**
      * The result of the unit test.
      * 
-     * @since UT.00.02
+     * @since 18-01-03
      * @var string|null 
      */
     public $unitTestResult;
-    
+
     /**
      * 
-     * @since UT.00.02
+     * @since 18-01-03
      */
     public function validateDocComments()
     {

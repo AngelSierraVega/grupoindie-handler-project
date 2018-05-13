@@ -1,40 +1,42 @@
 <?php
 
-/**
- * UnitTest - DocComment
- *
- */
-
-namespace GIndie\UnitTest\Parser;
+namespace GIndie\ProjectHandler\Parser;
 
 /**
  * Description of DocComment
  *
- * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
- * @package UnitTest
- *
- * @version UT.00.00 18-01-01 Dummie class created
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @edit UT.00.01
+ * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ *
+ * @package ProjectHandler
+ * 
+ * @since 18-01-01
+ * @edit 18-01-01
  * - Extend from \GIndie\Common\Parser\DocComment
  * - Created methods
- * @edit UT.00.02 18-01-02
+ * @edit 18-01-02
  * - parse @ut_factory
  * - Created method: parseFactory()
- * @edit UT.00.03 18-01-20
+ * @edit 18-01-20
  * - Updated parseFactory()
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
 class DocComment extends \GIndie\Common\Parser\DocComment
 {
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-01
      * 
      * @param type $tagname
      * @param type $value
      * 
-     * @edit UT.00.02
+     * @edit 18-01-02
      */
     protected function parseTag($tagname, $value)
     {
@@ -60,11 +62,11 @@ class DocComment extends \GIndie\Common\Parser\DocComment
 
     /**
      * 
-     * @since UT.00.02
+     * @since 18-01-02
      * 
      * @param array $data
      * @return array
-     * @edit UT.00.03
+     * @edit 18-01-20
      * - Corrected bug
      */
     private function parseFactory(array $data)
@@ -82,7 +84,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
     }
 
     /**
-     * @since UT.00.01
+     * @since 18-01-01
      * @param array $data
      * @return string
      */
@@ -95,18 +97,18 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * 
      * @param string $string
      * @return string
-     * @since UT.00.03
+     * @since 18-01-20
      */
     private function parseParamString($string)
     {
-        return \strstr(\substr($string, 1),'"',true);
+        return \strstr(\substr($string, 1), '"', true);
     }
 
     /**
      * 
      * @param string $string
      * @return string
-     * @since UT.00.03
+     * @since 18-01-20
      */
     private function parseParamTag($string)
     {
@@ -117,19 +119,18 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * 
      * @param string $string
      * @return string
-     * @since UT.00.03
+     * @since 18-01-20
      */
     private function parseParamArray($string)
     {
-        return \strstr(\substr($string, 1),']',true);
+        return \strstr(\substr($string, 1), ']', true);
     }
-    
 
     /**
      * 
      * @param string $string
      * @return array
-     * @since UT.00.03
+     * @since 18-01-20
      */
     private function parseParameters($string)
     {
@@ -140,7 +141,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                 case '"':
                     $parsedString = $this->parseParamString($string);
                     $rtnArray[] = $parsedString;
-                    $string = \substr($string, \strlen($parsedString)+2);
+                    $string = \substr($string, \strlen($parsedString) + 2);
                     break;
                 case ' ':
                     $string = \substr($string, 1);
@@ -150,11 +151,11 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                     break;
                 case '[':
                     $parsedString = $this->parseParamArray($string);
-                    $string = \substr($string, \strlen($parsedString)+2);
-                    
-                /**
-                 * @todo Validation of =>
-                 */
+                    $string = \substr($string, \strlen($parsedString) + 2);
+
+                    /**
+                     * @todo Validation of =>
+                     */
                     if (\strstr($parsedString, "=>") !== false) {
                         $tmpArray = [];
                         foreach (\explode(",", $parsedString) as $tmpExploded) {
@@ -178,7 +179,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
     }
 
     /**
-     * @since UT.00.01
+     * @since 18-01-01
      * @param array $data
      * @return array
      */

@@ -1,10 +1,6 @@
 <?php
 
-/**
- * UnitTest - ReflectionInterface
- */
-
-namespace GIndie\UnitTest\Handler;
+namespace GIndie\ProjectHandler\Handler;
 
 /**
  * Description of ReflectionInterface
@@ -12,29 +8,35 @@ namespace GIndie\UnitTest\Handler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
+ * @package ProjectHandler
  *
- * @version UT.00.00 18-01-03 Interface created.
- * @edit UT.00.01
+ * @since 18-01-03
+ * @edit 18-01-03
  * - Moved in methods.
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
 interface ReflectionInterface
 {
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      */
     public function getDocComments();
 
     /**
-     * @since UT.00.01
+     * @since 18-01-03
      */
     public function requiredTags();
     
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @param type $tagname
      * @param type $colspan
      */

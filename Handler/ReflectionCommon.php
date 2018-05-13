@@ -1,10 +1,5 @@
 <?php
-
-/**
- * UnitTest - ReflectionCommon
- */
-
-namespace GIndie\UnitTest\Handler;
+namespace GIndie\ProjectHandler\Handler;
 
 /**
  * Description of ReflectionCommon
@@ -12,18 +7,24 @@ namespace GIndie\UnitTest\Handler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
+ * @package ProjectHandler
  *
- * @version UT.00.00 18-01-03 Trait created.
- * @edit UT.00.01
+ * @since 18-01-03
+ * @edit 18-01-03
  * - Moved in methods.
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
 trait ReflectionCommon
 {
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @return array
      */
     public function getDocComments()
@@ -32,7 +33,7 @@ trait ReflectionCommon
     }
 
     /**
-     * @since UT.00.01
+     * @since 18-01-03
      * @return string
      */
     public function formattedTitle()
@@ -43,7 +44,7 @@ trait ReflectionCommon
     /**
      * validateTag
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * 
      * @param string $tagname
      * @param string $colspan
@@ -74,7 +75,7 @@ trait ReflectionCommon
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @var array|null 
      */
     protected $docComments;

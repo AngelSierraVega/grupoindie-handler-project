@@ -1,10 +1,6 @@
 <?php
 
-/**
- * UnitTest - InterfaceProject
- */
-
-namespace GIndie\UnitTest\Handler;
+namespace GIndie\ProjectHandler\Handler;
 
 /**
  * Description of InterfaceProject
@@ -12,35 +8,42 @@ namespace GIndie\UnitTest\Handler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
- * @version UT.00.00 18-01-03 Interface created.
- * @edit UT.00.01
+ * @package ProjectHandler
+ * 
+ * @since 18-01-03
+ * @edit 18-01-03
  * - Added code from UnitTest\HandlerProject.php
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
 interface InterfaceProject
 {
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      */
     public static function projectClasses();
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      */
     public static function projectName();
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      */
     public static function projectNamespace();
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      */
     public static function projectVendor();
 }

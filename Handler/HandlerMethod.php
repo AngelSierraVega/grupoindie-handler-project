@@ -1,9 +1,6 @@
 <?php
-/**
- * UnitTest - HandlerMethod
- */
 
-namespace GIndie\UnitTest;
+namespace GIndie\ProjectHandler\Handler;
 
 /**
  * Description of HandlerMethod
@@ -11,32 +8,38 @@ namespace GIndie\UnitTest;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
+ * @package ProjectHandler
  *
- * @version UT.00.00 18-01-03 Class created.
- * @edit UT.00.01
+ * @since 18-01-03
+ * @edit 18-01-03
  * - Added code from GIndie\UnitTest\ClassTest\ReflectionMethod
  * - Updated traits
  * - Interfaces implemented.
- * @edit UT.00.02
  * - $unitTestCount implemented
  * - Implemented error on Unit Test not defined
- * @edit UT.00.03 18-02-??
+ * @edit 18-02-??
  * - Updated handleTest()
+ * @version A0.00
+ * @edit 18-05-13
+ * - Upgraded file structure and namespace
+ * - Upgraded uses and implementations
+ * @version A0.F0
+ * @todo
+ * - Upgrade/verify structure for A1
  */
-class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandler, Handler\ReflectionInterface
+class HandlerMethod extends \ReflectionMethod implements InterfaceHandler, ReflectionInterface
 {
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      */
-    use Handler\Common;
-    use Handler\ReflectionCommon;
+    use Common;
+    use ReflectionCommon;
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * 
      * @param type $class
      * @param type $name
@@ -44,16 +47,15 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
     public function __construct($class, $name)
     {
         parent::__construct($class, $name);
-        $this->docComments = \GIndie\UnitTest\Parser\DocComment::parseFromString($this->getDocComment());
+        $this->docComments = \GIndie\ProjectHandler\Parser\DocComment::parseFromString($this->getDocComment());
     }
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * 
      * @param \ReflectionMethod $Method
      * @return string Description
-     * @edit UT.00.02
      */
     public function execUnitTest()
     {
@@ -80,12 +82,12 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
             <caption><?= $this->getName(); ?></caption>
             <tr>
                 <?= $this->validateTag("description", "2"); ?>
-                <?= $this->validateTag("link", "1"); ?>
+        <?= $this->validateTag("link", "1"); ?>
             </tr>
             <tr>
                 <?= $this->validateTag("return"); ?>
                 <?= $this->validateTag("since"); ?>
-                <?= $this->validateTag("version"); ?>
+            <?= $this->validateTag("version"); ?>
             </tr>
             <?php
             if (isset($this->docComments["edit"])) {
@@ -123,7 +125,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
     }
 
     /**
-     * @since UT.00.01
+     * @since 18-01-03
      * return array
      */
     public function requiredTags()
@@ -133,11 +135,11 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * 
      * @param type $data
      * @return string
-     * @edit UT.00.03
+     * @edit 18-02-??
      * - Handle constructor and default methods
      */
     private function handleTest($utKey, $utData)
@@ -203,7 +205,7 @@ class HandlerMethod extends \ReflectionMethod implements Handler\InterfaceHandle
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * 
      * @param array $parameters
      * @return string

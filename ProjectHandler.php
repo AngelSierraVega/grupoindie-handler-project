@@ -1,44 +1,48 @@
 <?php
-/**
- * UnitTest - HandlerProject
- */
 
-namespace GIndie\UnitTest;
+namespace GIndie;
 
 /**
- * Description of HandlerProject
+ * ProjectHandler
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package UnitTest
+ * @package ProjectHandler
  *
- * @version UT.00.00 18-01-03 Class created.
- * @edit UT.00.01
- * - Interface implemented with dummie methods.
- * - Use trait
- * - Defined abstract projectClasses(), projectNamespace(), projectVendor()
- * @edit UT.00.02
- * - Moved in code from Module\AbstractModule.php
- * - Moved out abstract functions to interface Handler\InterfaceProject
- * - Implemented $unitTestCount, $unitTestResult, execUnitTest(), formattedTitle(), Handler\InterfaceProject
+ * @since 18-02-23
+ * @edit 18-02-23
+ * - Abstract class
+ * - Implemented ProjectHandlerInterface
+ * @edit 18-02-24
+ * - Updated autoloaderFilename()
+ * @edit 18-03-27
+ * - Added excludeFromPhar();
+ * @version A0.00
+ * @edit 18-05-13
+ * - Moved class from external project GI-Common
+ * - Class implements ProjectHandler\Handler\InterfaceHandler and ProjectHandler\Handler\InterfaceProject
+ * @version A0.F0
  */
-abstract class HandlerProject implements Handler\InterfaceHandler, Handler\InterfaceProject
+abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface, ProjectHandler\Handler\InterfaceHandler, ProjectHandler\Handler\InterfaceProject
 {
-
+    
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
+     * @edit 18-05-13
+     * - Added use from UnitTest\HandlerProject
      */
-    use Handler\Common;
+    use ProjectHandler\Handler\Common;
 
     /**
-     * 
-     * @since UT.00.01
      * 
      * @return void
      * 
-     * @edit UT.00.02
+     * @since 18-01-03
+     * @edit 18-01-03
+     * @edit 18-05-13
+     * - Added method from UnitTest\HandlerProject
      */
     public function execUnitTest()
     {
@@ -54,7 +58,7 @@ abstract class HandlerProject implements Handler\InterfaceHandler, Handler\Inter
             <?php
             $this->unitTestStatus = true;
             foreach (static::projectClasses() as $classTest) {
-                $classTest = new \GIndie\UnitTest\HandlerClass($classTest);
+                $classTest = new \GIndie\ProjectHandler\Handler\HandlerClass($classTest);
                 $classTest->execUnitTest();
                 switch (true)
                 {
@@ -88,9 +92,11 @@ abstract class HandlerProject implements Handler\InterfaceHandler, Handler\Inter
 
     /**
      * 
-     * @since UT.00.01
+     * @since 18-01-03
      * @return string
-     * @edit UT.00.02
+     * @edit 18-01-03
+     * @edit 18-05-13
+     * - Added method from UnitTest\HandlerProject
      */
     public function formattedTitle()
     {
@@ -102,6 +108,59 @@ abstract class HandlerProject implements Handler\InterfaceHandler, Handler\Inter
         $out = ob_get_contents();
         ob_end_clean();
         return $out;
+    }
+    
+    /**
+     * @return array
+     * @since 18-05-13
+     * @todo
+     * - Implement traits and non-main classes.
+     */
+    public static function projectClasses()
+    {
+        return static::mainClasses();
+    }
+
+    /**
+     * @return array
+     * @since 18-02-23
+     * 
+     */
+    public static function mainClasses()
+    {
+        return [];
+    }
+
+    /**
+     * @return string
+     * @since 18-02-23
+     * @edit 18-02-24
+     */
+    public static function autoloaderFilename()
+    {
+        return "Autoloader" . static::projectName() . ".php";
+    }
+
+    /**
+     * 
+     * @return string
+     * @since 18-02-24
+     */
+    public static function getNamespace()
+    {
+        $rntStr = "\\" . static::projectVendor();
+        $rntStr .= static::projectNamespace() ? "\\" . static::projectNamespace() : "";
+        $rntStr .= "\\" . static::projectName();
+        return $rntStr;
+    }
+
+    /**
+     * @return array
+     * @since 18-03-27
+     */
+    public static function excludeFromPhar()
+    {
+        return [".git", ".gitignore", "nbproject"];
     }
 
 }
