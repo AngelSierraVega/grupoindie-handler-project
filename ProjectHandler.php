@@ -24,9 +24,10 @@ namespace GIndie;
  * - Class implements ProjectHandler\Handler\InterfaceHandler and ProjectHandler\Handler\InterfaceProject
  * @version A0.F0
  */
-abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface, ProjectHandler\Handler\InterfaceHandler, ProjectHandler\Handler\InterfaceProject
+abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface, ProjectHandler\Handler\InterfaceHandler,
+        ProjectHandler\Handler\InterfaceProject
 {
-    
+
     /**
      * 
      * @since 18-01-03
@@ -48,7 +49,7 @@ abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface,
     {
         ob_start();
         ?>
-        <table class="table table-bordered">
+        <table class="table table-bordered"> 
             <caption>Unit test on file public methods</caption>
             <tr>
                 <th class='info'>Class</th>
@@ -109,7 +110,7 @@ abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface,
         ob_end_clean();
         return $out;
     }
-    
+
     /**
      * @return array
      * @since 18-05-13
