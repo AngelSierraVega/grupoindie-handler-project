@@ -2,6 +2,8 @@
 
 namespace GIndie;
 
+use GIndie\ScriptGenerator\HTML5;
+
 /**
  * ProjectHandler
  *
@@ -24,8 +26,8 @@ namespace GIndie;
  * - Class implements ProjectHandler\Handler\InterfaceHandler and ProjectHandler\Handler\InterfaceProject
  * @version A0.F0
  */
-abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface, ProjectHandler\Handler\InterfaceHandler,
-        ProjectHandler\Handler\InterfaceProject
+abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface,
+        ProjectHandler\Handler\InterfaceHandler, ProjectHandler\Handler\InterfaceProject
 {
 
     /**
@@ -35,6 +37,54 @@ abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface,
      * - Added use from UnitTest\HandlerProject
      */
     use ProjectHandler\Handler\Common;
+
+    /**
+     * @since 18-05-16
+     * @return \GIndie\ScriptGenerator\HTML5\Format\Preformatted
+     */
+    public function displayCurrentLog()
+    {
+        $rtnNode = new HTML5\Tables\Table();
+        $rtnNode->addHeader(["FILE OR FOLDER", "VERSION"]);
+        $rtnNode->addRow(["[-]ProjectHandler", "[cla]A0.F0"]);
+        $rtnNode->addRow(["[+]Components_ProjectHandler", "[fld]A0.F0"]);
+        $rtnNode->addRow(["&nbsp;&nbsp;[-]ProjectHandler", "&nbsp;&nbsp;[cla]A0.F0"]);
+
+        $srcRoot = \realpath($srcRoot);
+        $exclude = $this->projectHandler->excludeFromPhar();
+        $filter = function ($file, $key, $iterator) use ($exclude) {
+            if (\in_array($file->getFilename(), $exclude)) {
+                return false;
+            }
+            return true;
+        };
+        $innerIterator = new \RecursiveDirectoryIterator(
+                $srcRoot, \RecursiveDirectoryIterator::SKIP_DOTS
+        );
+        $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveCallbackFilterIterator($innerIterator, $filter)
+        );
+
+        return $rtnNode;
+        $rtnNode = HTML5\Format::preformatted("");
+        //$rtnNode->setTag("pre");
+        $rtnNode->addContent("-------------------------------PACKAGE---------------------------------|\n");
+        $rtnNode->addContent(" NombreDelProyecto\n");
+        $rtnNode->addContent("---------------------------------LOG-----------------------------------|\n");
+        $rtnNode->addContent("[A0]\t| AlphaCero\t| Functional UnitTest\n");
+        $rtnNode->addContent("  [F0]\t| --------\t| Final adaptation for UnitTest into ProjectHandler\n");
+        $rtnNode->addContent("[A1]\t| AlphaOne\t| Functional ProjectHandler\n");
+        $rtnNode->addContent("<br>");
+        $rtnNode->addContent("--------------FILE OR FOLDER------------|------------VERSION-----------|<br>");
+        $rtnNode->addContent("[-]ProjectHandler                       |[cla]A0.F0<br>");
+        $rtnNode->addContent("[+]Components_ProjectHandler            |[fld]A0.F0<br>");
+        $rtnNode->addContent("  [-]ProjectHandler                     |  [cla]A0.F0<br>");
+        $rtnNode->addContent("-----------------------------------------------------------------------|<br>");
+        $rtnNode->addContent("-----------------------------------------------------------------------|<br>");
+        $rtnNode->addContent("<br>");
+        $rtnNode->addContent("<br>");
+        return $rtnNode;
+    }
 
     /**
      * 
