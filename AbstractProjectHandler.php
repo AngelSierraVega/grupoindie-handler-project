@@ -1,6 +1,6 @@
 <?php
 
-namespace GIndie;
+namespace GIndie\ProjectHandler;
 
 use GIndie\ScriptGenerator\HTML5;
 
@@ -20,14 +20,23 @@ use GIndie\ScriptGenerator\HTML5;
  * - Updated autoloaderFilename()
  * @edit 18-03-27
  * - Added excludeFromPhar();
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Moved class from external project GI-Common
  * - Class implements ProjectHandler\Handler\InterfaceHandler and ProjectHandler\Handler\InterfaceProject
- * @version A0.F0
+ * @version 0A.0F
+ * @edit 18-05-16
+ * - Created addRowsFromFolder(), displayCurrentLog()
+ * @edit 18-05-17
+ * - Renamed class from ProjectHandler to AbstractProjectHandler
+ * - Updated namespace
+ * - Created versions()
+ * @edit 18-05-18
+ * - Removed deprecated methods addRowsFromFolder(), displayCurrentLog()
+ * - Funcional VersionHandler
+ * @version 0A.50
  */
-abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface,
-        ProjectHandler\Handler\InterfaceHandler, ProjectHandler\Handler\InterfaceProject
+abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataDefinition\ProjectHandler
 {
 
     /**
@@ -36,54 +45,40 @@ abstract class ProjectHandler implements ProjectHandler\ProjectHandlerInterface,
      * @edit 18-05-13
      * - Added use from UnitTest\HandlerProject
      */
-    use ProjectHandler\Handler\Common;
+    use Handler\Common;
 
     /**
-     * @since 18-05-16
-     * @return \GIndie\ScriptGenerator\HTML5\Format\Preformatted
+     * 
+     * @return \GIndie\ProjectHandler\DataDefinition\VersionHandler
+     * @since 18-05-17
      */
-    public function displayCurrentLog()
+    public function execVersionHandler()
     {
-        $rtnNode = new HTML5\Tables\Table();
-        $rtnNode->addHeader(["FILE OR FOLDER", "VERSION"]);
-        $rtnNode->addRow(["[-]ProjectHandler", "[cla]A0.F0"]);
-        $rtnNode->addRow(["[+]Components_ProjectHandler", "[fld]A0.F0"]);
-        $rtnNode->addRow(["&nbsp;&nbsp;[-]ProjectHandler", "&nbsp;&nbsp;[cla]A0.F0"]);
+        return new VersionHandler($this);
+    }
 
-        $srcRoot = \realpath($srcRoot);
-        $exclude = $this->projectHandler->excludeFromPhar();
-        $filter = function ($file, $key, $iterator) use ($exclude) {
-            if (\in_array($file->getFilename(), $exclude)) {
-                return false;
-            }
-            return true;
-        };
-        $innerIterator = new \RecursiveDirectoryIterator(
-                $srcRoot, \RecursiveDirectoryIterator::SKIP_DOTS
-        );
-        $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveCallbackFilterIterator($innerIterator, $filter)
-        );
-
-        return $rtnNode;
-        $rtnNode = HTML5\Format::preformatted("");
-        //$rtnNode->setTag("pre");
-        $rtnNode->addContent("-------------------------------PACKAGE---------------------------------|\n");
-        $rtnNode->addContent(" NombreDelProyecto\n");
-        $rtnNode->addContent("---------------------------------LOG-----------------------------------|\n");
-        $rtnNode->addContent("[A0]\t| AlphaCero\t| Functional UnitTest\n");
-        $rtnNode->addContent("  [F0]\t| --------\t| Final adaptation for UnitTest into ProjectHandler\n");
-        $rtnNode->addContent("[A1]\t| AlphaOne\t| Functional ProjectHandler\n");
-        $rtnNode->addContent("<br>");
-        $rtnNode->addContent("--------------FILE OR FOLDER------------|------------VERSION-----------|<br>");
-        $rtnNode->addContent("[-]ProjectHandler                       |[cla]A0.F0<br>");
-        $rtnNode->addContent("[+]Components_ProjectHandler            |[fld]A0.F0<br>");
-        $rtnNode->addContent("  [-]ProjectHandler                     |  [cla]A0.F0<br>");
-        $rtnNode->addContent("-----------------------------------------------------------------------|<br>");
-        $rtnNode->addContent("-----------------------------------------------------------------------|<br>");
-        $rtnNode->addContent("<br>");
-        $rtnNode->addContent("<br>");
-        return $rtnNode;
+    /**
+     * 
+     * @return string
+     * @since 18-05-17
+     * @edit 18-05-18
+     */
+    public static function versions()
+    {
+        $rtnArray = [];
+        //AlphaCero
+        $rtnArray[\hexdec("0A.00")]["code"] = "AlphaCero";
+        $rtnArray[\hexdec("0A.00")]["description"] = "Functional project";
+        $rtnArray[\hexdec("0A.00")]["threshold"] = "0A.00";
+        //BetaCero
+        $rtnArray[\hexdec("0B.00")]["code"] = "BetaCero";
+        $rtnArray[\hexdec("0B.00")]["description"] = "Main funcionality";
+        $rtnArray[\hexdec("0B.00")]["threshold"] = "0B.00";
+        //One
+        $rtnArray[\hexdec("10.00")]["code"] = "One";
+        $rtnArray[\hexdec("10.00")]["description"] = "Final version";
+        $rtnArray[\hexdec("10.00")]["threshold"] = "10.00";
+        return $rtnArray;
     }
 
     /**

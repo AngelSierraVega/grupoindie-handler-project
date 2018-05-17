@@ -11,7 +11,7 @@
  * @since 18-05-13
  * @edit 18-05-13
  * - Added code from GI-SG-DML
- * @version A1.00
+ * @version 0A.10
  */
 
 namespace GIndie\ProjectHandler;
@@ -37,4 +37,4 @@ namespace GIndie\ProjectHandler;
  * Fixed requires
  * @since 18-05-13
  */
-require_once(__DIR__ . "\\ProjectHandler.php");
+require_once(__DIR__ . "\\Deprecated\\ProjectHandler.php");

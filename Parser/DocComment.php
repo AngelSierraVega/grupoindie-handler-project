@@ -19,10 +19,10 @@ namespace GIndie\ProjectHandler\Parser;
  * - Created method: parseFactory()
  * @edit 18-01-20
  * - Updated parseFactory()
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
- * @version A0.F0
+ * @version 0A.0F
  * @todo
  * - Upgrade/verify structure for A1
  */

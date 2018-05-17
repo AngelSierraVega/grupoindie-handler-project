@@ -1,6 +1,6 @@
 <?php
 
-namespace GIndie\ProjectHandler;
+namespace GIndie\ProjectHandler\DataDefinition;
 
 /**
  * DVLP-GICommon - ProjectHandlerInterface
@@ -15,13 +15,32 @@ namespace GIndie\ProjectHandler;
  * - Added methods from UnitTest\GIndie\UnitTest\Handler\InterfaceProject
  * @edit 18-03-27
  * - Added excludeFromPhar();
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Moved class from external project GI-Common
- * @version A0.F0
+ * @version 0A.F0
+ * @edit 18-05-17
+ * - Renamed interface from ProjectHandlerInterface to ProjectHandler
+ * - Upgraded file structure and namespace for A.1
+ * - Added versions(), execVersionHandler()
+ * @version 0A.10
  */
-interface ProjectHandlerInterface
+interface ProjectHandler
 {
+
+    /**
+     * 
+     * @return \GIndie\ProjectHandler\DataDefinition\VersionHandler
+     * @since 18-05-17
+     */
+    public function execVersionHandler();
+
+    /**
+     * 
+     * @return array An associative array with ...
+     * @since 18-05-17
+     */
+    public static function versions();
 
     /**
      * @return array

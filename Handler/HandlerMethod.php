@@ -23,7 +23,7 @@ namespace GIndie\ProjectHandler\Handler;
  * @edit 18-05-13
  * - Upgraded file structure and namespace
  * - Upgraded uses and implementations
- * @version A0.F0
+ * @version 0A.0F
  * @todo
  * - Upgrade/verify structure for A1
  */

@@ -15,7 +15,7 @@ namespace GIndie\ProjectHandler\Handler;
  * @version A0.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
- * @version A0.F0
+ * @version 0A.0F
  * @todo
  * - Upgrade/verify structure for A1
  */
