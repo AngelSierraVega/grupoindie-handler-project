@@ -8,7 +8,7 @@ namespace GIndie\ProjectHandler\DataDefinition;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\DataDefinition
  *
  * @since 18-02-23
  * @edit 18-02-23
@@ -24,6 +24,9 @@ namespace GIndie\ProjectHandler\DataDefinition;
  * - Upgraded file structure and namespace for A.1
  * - Added versions(), execVersionHandler()
  * @version 0A.10
+ * @edit 18-05-19
+ * - Revised Project packages
+ * @version 0A.50
  */
 interface ProjectHandler
 {

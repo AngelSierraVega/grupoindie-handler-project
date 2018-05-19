@@ -8,10 +8,10 @@ namespace GIndie\ProjectHandler\DataDefinition;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\VersionHandler
  *
  * @since 18-05-17
- * @version 0A.40
+ * @version 0A.50
  */
 interface VersionHandler
 {

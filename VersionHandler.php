@@ -10,10 +10,14 @@ use GIndie\ScriptGenerator\HTML5;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\VersionHandler
  *
  * @since 18-05-17
- * @version 0A.35
+ * @version 0A.50
+ * @edit 18-05-19
+ * - Sepparated tables into MainPackage and Subpackage
+ * - Added protected/private methods for displaying the results
+ * @version 0A.60
  */
 class VersionHandler implements DataDefinition\VersionHandler
 {
@@ -37,37 +41,33 @@ class VersionHandler implements DataDefinition\VersionHandler
      * @var int 
      * @since 18-05-18
      */
-    private $currentBuild;
+    private $projectBuild;
 
     /**
      * 
      * @param string $pathToSourceCode
      * @return boolean
      * @since 18-05-17
+     * @edit 18-05-19
+     * - Handle storing of $fileHandler['package']['file_id']
+     * - Abstracted code for RecursiveIteratorIterator into \GIndie\Common\PHP\Files
+     * @todo
+     * - Skip UNDEFINED
+     * - Handle DOING ?
      */
     private function handleFiles($pathToSourceCode)
     {
-        $exclude = $this->projectHandler->excludeFromPhar();
-        $filter = function ($file, $key, $iterator) use ($exclude) {
-            if (\in_array($file->getFilename(), $exclude)) {
-                return false;
-            }
-            return true;
-        };
-        $innerIterator = new \RecursiveDirectoryIterator(
-                $pathToSourceCode, \RecursiveDirectoryIterator::SKIP_DOTS
-        );
-        $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveCallbackFilterIterator($innerIterator, $filter)
-        );
-        $this->currentBuild = 0;
-        foreach ($iterator as $key => $value) {
+        $iterator = \GIndie\Common\PHP\Files::getRecursiveIteratorIterator($pathToSourceCode, $this->projectHandler->excludeFromPhar());
+        $this->projectBuild = 0;
+        $tmpCount = 0;
+        foreach ($iterator as $value) {
             $fileHandlerTemp = $this->getFileHandler($value);
-            $this->currentBuild += \hexdec($fileHandlerTemp->getCurrentVersion());
-            $this->fileHandler[$fileHandlerTemp->getFileId()] = $fileHandlerTemp;
+            $this->projectBuild += \hexdec($fileHandlerTemp->getCurrentVersion());
+            $this->fileHandler[$fileHandlerTemp->getPackage()][$fileHandlerTemp->getFileId()]
+                    = $fileHandlerTemp;
+            $tmpCount++;
         }
-        $this->currentBuild = ($this->currentBuild / \count($this->fileHandler));
-        //$this->currentBuild = \count($this->fileHandler);
+        $this->projectBuild = ($this->projectBuild / $tmpCount);
         return true;
     }
 
@@ -76,10 +76,15 @@ class VersionHandler implements DataDefinition\VersionHandler
      * @param \SplFileInfo $fileInfo
      * @return \GIndie\ProjectHandler\FileHandler
      * @since 18-05-17
+     * @edit 18-05-19
+     * - Upgraded funcionality for \GIndie\ProjectHandler\FileHandler
      */
     private function getFileHandler(\SplFileInfo $fileInfo)
     {
-        return new FileHandler($fileInfo);
+        $fileId = \substr(
+                $fileInfo->getRealPath(), \strlen($this->projectHandler->pathToSourceCode())
+        );
+        return new FileHandler($fileId, $fileInfo);
     }
 
     /**
@@ -99,6 +104,7 @@ class VersionHandler implements DataDefinition\VersionHandler
      */
     public function getPackages()
     {
+        return \array_keys($this->fileHandler);
         return ["ProjectHandler"];
     }
 
@@ -113,57 +119,109 @@ class VersionHandler implements DataDefinition\VersionHandler
     }
 
     /**
-     * @since 18-05-17
-     * @return array An associative array where key = 'package id' and
+     * 
+     * @return array An associative array where key = 'result identifier' and
      *               value = 'an html node displaying the results'.
+     * @since 18-05-17
+     * @edit 18-05-19
+     * - Abstracted code into dspResultsTxt()
+     * - Abstracted code into dspTableVersions()
      */
     public function getHtmlResults()
     {
         $rntArray = [];
-        $versionsTable = new HTML5\Tables\Table();
-        $rntArray["Versions"] = $versionsTable;
-        $versionsTable->addHeader(["Threshold", "Code", "Description", "Status"]);
+        $rntArray["Versions"] = $this->dspTableVersions();
+        foreach ($this->getPackages() as $packageId) {
+            $rntArray[$packageId] = $this->dspTableSubpackage($packageId);
+        }
+        $rntArray["TextVersion"] = $this->dspResultsTxt();
+        return $rntArray;
+    }
+
+    /**
+     * 
+     * @return \GIndie\ScriptGenerator\Dashboard\Tables\Table
+     * @since 18-05-19
+     * @todo
+     * - Add caption
+     */
+    protected function dspTableVersions()
+    {
+        $versionsTable = new \GIndie\ScriptGenerator\Dashboard\Tables\Table();
+        $versionsTable->addClass("table-bordered table-condensed");
+        $versionsTable->addHeader(HTML5\Tables::cellHeader($this->projectHandler->getNamespace() . " v " . $this->getProjectVersion())->setAttribute("colspan", "6"));
+        $header = $versionsTable->getHeader();
+        $header->addRow(["Threshold", "Code", "Description", "Status"]);
         foreach ($this->projectHandler->versions() as $tmpVersion) {
             $versionsTable->addRow([$tmpVersion["threshold"], $tmpVersion["code"], $tmpVersion["description"], "@todo"]);
         }
-        foreach ($this->getPackages() as $packageId) {
-            $rntArray[$packageId] = $this->getHtmlResult($packageId);
-        }
+        return $versionsTable;
+    }
 
+    /**
+     * 
+     * @return \GIndie\ScriptGenerator\Dashboard\Tables\Table
+     * @since 18-05-19
+     */
+    protected function dspTableMainPackage()
+    {
+        return new \GIndie\ScriptGenerator\Dashboard\Tables\Table();
+    }
+
+    /**
+     * 
+     * @param string $subpackageId
+     * @return \GIndie\ScriptGenerator\Dashboard\Tables\Table
+     * @since 18-05-19
+     */
+    protected function dspTableSubpackage($subpackageId)
+    {
+        $rtnNode = new HTML5\Tables\Table();
+        $rtnNode->addClass("table table-bordered table-condensed");
+        $rtnNode->addHeader(HTML5\Tables::cellHeader($subpackageId . " |  v @getPackageVersion()")->setAttribute("colspan", "5"));
+        $header = $rtnNode->getHeader();
+        $header->addRow(["File type", "Current version", "File", "Build (#)", "Last edit"]);
+        foreach ($this->fileHandler[$subpackageId] as $key => $value) {
+            $rtnNode->addRow([$value->getFiletype(), $value->getCurrentVersion(), $value->getFileId(), \hexdec($value->getCurrentVersion()), $value->getLastEdit()]);
+        }
+        return $rtnNode;
+        return new \GIndie\ScriptGenerator\Dashboard\Tables\Table();
+    }
+
+    /**
+     * 
+     * @return \GIndie\ScriptGenerator\HTML5\Format\Preformatted
+     * @since 18-05-19
+     */
+    protected function dspResultsTxt()
+    {
         $preNode = HTML5\Format::preformatted("");
         $preNode->addContent("-------------------------------PACKAGE---------------------------------|\n");
         $preNode->addContent(" " . $this->projectHandler->getNamespace() . " v " . $this->getProjectVersion() . "\n");
-        
+
         $preNode->addContent("--------------------------------FILE-----------------------------|--V--|\n");
-        foreach ($this->fileHandler as $key => $value) {
-            $txtRow = "[" . $value->getFiletype() . "] " . $value->getFileId() . "";
-            $txtRow = \str_pad($txtRow, 65,"."); 
-            $txtRow .= "|" . $value->getCurrentVersion() . "|\n";
-            $preNode->addContent($txtRow);
+        foreach ($this->fileHandler as $packageId => $fileId) {
+            foreach ($fileId as $fileHandler) {
+                $txtRow = "[" . $fileHandler->getFiletype() . "] " . $fileHandler->getFileId() . "";
+                $txtRow = \str_pad($txtRow, 65, ".");
+                $txtRow .= "|" . $fileHandler->getCurrentVersion() . "|\n";
+                $preNode->addContent($txtRow);
+            }
         }
         $preNode->addContent("-----------------------------------------------------------------------|\n");
-        $rntArray["TextVersion"] = $preNode;
-        //return $rtnNode;
-
-        return $rntArray;
+        return $preNode;
     }
 
     /**
      * @since 18-05-17
      * @return type An html node displaying the result of the specified package.
+     * @deprecated since 18-05-19
+     * @todo
+     * - Remove from interface and delete method
      */
     public function getHtmlResult($packageId = null)
     {
-        $rtnNode = new HTML5\Tables\Table();
-        $rtnNode->addClass("table table-bordered table-condensed");
-        $rtnNode->addHeader(HTML5\Tables::cellHeader($this->projectHandler->getNamespace() . " v " . $this->getProjectVersion())->setAttribute("colspan", "6"));
-        $header = $rtnNode->getHeader();
-        $header->addRow(["#", "File", "File type", "Current version", "Version (int)", "Last edit"]);
-        //$rtnNode->addHeader(["#", "File", "File type", "Current version", "Version (int)", "Last edit"]);
-        foreach ($this->fileHandler as $key => $value) {
-            $rtnNode->addRow(["[@todo]", $value->getFileId(), $value->getFiletype(), $value->getCurrentVersion(), \hexdec($value->getCurrentVersion()) . " (" . \dechex(\hexdec($value->getCurrentVersion())) . ")", $value->getLastEdit()]);
-        }
-        return $rtnNode;
+        return "@deprecating";
     }
 
     /**
@@ -171,8 +229,7 @@ class VersionHandler implements DataDefinition\VersionHandler
      */
     public function getProjectVersion()
     {
-        return \dechex($this->currentBuild) . " (" . $this->currentBuild . ")";
-        return "@doing";
+        return \dechex($this->projectBuild) . " (" . $this->projectBuild . ")";
     }
 
     /**

@@ -8,11 +8,14 @@ namespace GIndie\ProjectHandler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\FileHandler
  *
  * @since 18-05-16
  * @edit 18-05-18
- * @version 0A.35
+ * @version 0A.50
+ * @edit 18-05-19
+ * - Functional constructor for defined private vars 
+ * @version 0A.60
  */
 class FileHandler implements DataDefinition\FileHandler
 {
@@ -39,11 +42,15 @@ class FileHandler implements DataDefinition\FileHandler
     private $contentTokens;
 
     /**
-     * 
-     * @param \SplFileInfo $fileInfo
+     * @param string $fileId
+     * @param \SplFileInfo $splFileInfo
      * @since 18-05-18
+     * @edit 18-05-19
+     * - Added param $fileId
+     * @todo
+     * - Explode or optimize code
      */
-    public function __construct(\SplFileInfo $splFileInfo)
+    public function __construct($fileId, \SplFileInfo $splFileInfo)
     {
         //Define main vars
         $this->splFileInfo = $splFileInfo;
@@ -70,14 +77,17 @@ class FileHandler implements DataDefinition\FileHandler
             if (isset($tmpDocComment["package"])) {
                 $this->package = $tmpDocComment["package"];
             }
+            if (isset($tmpDocComment["subpackage"])) {
+                $this->subpackage = $tmpDocComment["subpackage"];
+            }
+            if (isset($tmpDocComment["version"])) {
+                $this->currentVersion = $tmpDocComment["version"];
+            }
         }
         $this->lastEdit = \date("y-m-d", $this->lastEdit);
         //Other
-        $this->currentVersion = $this->setCurrentVersion();
         $this->filetype = $this->setFileType();
-        //todo
-        $this->setFileId();
-        $this->subpackage;
+        $this->setFileId($fileId);
     }
 
     /**
@@ -145,27 +155,17 @@ class FileHandler implements DataDefinition\FileHandler
     }
 
     /**
-     * 
-     * @return string
-     * @since 18-05-18
-     */
-    private function setCurrentVersion()
-    {
-        return isset($this->docComment[0]["version"]) ? $this->docComment[0]["version"] : "@unable_to_read";
-    }
-
-    /**
-     * 
+     * @param string $fileId
      * @return boolean
      * @since 18-05-18
+     * @edit 18-05-19
+     * - Added param $fileId
+     * @todo
+     * - Remove file extention
      */
-    private function setFileId()
+    private function setFileId($fileId)
     {
-        $tmpStrPos = \strpos($this->getFullPath(), $this->getPackage());
-        $this->fileId = \substr(
-                $this->getFullPath(), \strpos($this->getFullPath(), $this->getPackage())
-                + \strlen($this->getPackage()) +1
-        );
+        $this->fileId = $fileId;
         return true;
     }
 

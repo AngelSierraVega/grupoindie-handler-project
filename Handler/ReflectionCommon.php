@@ -7,7 +7,7 @@ namespace GIndie\ProjectHandler\Handler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\UnitTest
  *
  * @since 18-01-03
  * @edit 18-01-03

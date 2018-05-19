@@ -6,12 +6,15 @@
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler
  *
  * @since 18-05-13
  * @edit 18-05-13
  * - Added code from GI-SG-DML
  * @version 0A.10
+ * @edit 18-05-19
+ * - Revised Project packages
+ * @version 0A.60
  */
 
 namespace GIndie\ProjectHandler;

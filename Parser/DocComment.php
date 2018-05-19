@@ -8,7 +8,7 @@ namespace GIndie\ProjectHandler\Parser;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\ParserDocComment
  * 
  * @since 18-01-01
  * @edit 18-01-01
@@ -23,6 +23,9 @@ namespace GIndie\ProjectHandler\Parser;
  * @edit 18-05-13
  * - Upgraded file structure and namespace
  * @version 0A.0F
+ * @edit 18-05-19
+ * - Revised Project packages
+ * @version 0A.50
  * @todo
  * - Upgrade/verify structure for A1
  */

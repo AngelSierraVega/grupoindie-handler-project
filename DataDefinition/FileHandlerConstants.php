@@ -5,7 +5,7 @@
  *
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\FileHandler
  * 
  * @version 0A.50
  */

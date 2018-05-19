@@ -8,13 +8,16 @@ namespace GIndie\ProjectHandler\Components\ProjectHandler;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler\Components
  *
  * @since 18-05-14
  * @version 0A.10
  * @edit 18-05-17
- * - 
+ * - Defined project versions
  * @version 0A.15
+ * @edit 18-05-19
+ * - Updated versions()
+ * @version 0A.60
  */
 class ProjectHandler extends \GIndie\ProjectHandler\AbstractProjectHandler
 {
@@ -23,26 +26,32 @@ class ProjectHandler extends \GIndie\ProjectHandler\AbstractProjectHandler
      * 
      * @return string
      * @since 18-05-17
+     * @edit 18-05-19
+     * - Upgraded project versions 
      */
     public static function versions()
     {
         $rtnArray = parent::versions();
         //AlphaCero
-        $rtnArray[\hexdec("0A.00")]["description"] = "Functional UnitTest";
+        $rtnArray[\hexdec("0A.00")]["description"] = "Functional project: UnitTest";
         //AlphaCeroFinal
         $rtnArray[\hexdec("0A.0F")]["description"] = "Final adaptation for UnitTest into ProjectHandler";
         $rtnArray[\hexdec("0A.0F")]["code"] = "AlphaCeroFinal";
         $rtnArray[\hexdec("0A.0F")]["threshold"] = "0A.0F";
         //AlphaOne
-        $rtnArray[\hexdec("0A.10")]["description"] = "Functional ProjectHandler";
+        $rtnArray[\hexdec("0A.10")]["description"] = "Functional restructured project as ProjectHandler";
         $rtnArray[\hexdec("0A.10")]["code"] = "AlphaOne";
         $rtnArray[\hexdec("0A.10")]["threshold"] = "0A.10";
-        //AlphaOne-A
-        $rtnArray[\hexdec("0A.50")]["code"] = "AlphaOne-A";
+        //AlphaFive
+        $rtnArray[\hexdec("0A.50")]["code"] = "AlphaFive";
         $rtnArray[\hexdec("0A.50")]["description"] = "Functional subpackage VersionHandler";
         $rtnArray[\hexdec("0A.50")]["threshold"] = "0A.50";
-        //AlphaOne-B
-        $rtnArray[\hexdec("0A.A0")]["code"] = "AlphaOne-B";
+        //AlphaSix
+        $rtnArray[\hexdec("0A.60")]["code"] = "AlphaSix";
+        $rtnArray[\hexdec("0A.60")]["description"] = "VersionHandler: Functional packages";
+        $rtnArray[\hexdec("0A.60")]["threshold"] = "0A.60";
+        //AlphaAlpha
+        $rtnArray[\hexdec("0A.A0")]["code"] = "AlphaAlpha";
         $rtnArray[\hexdec("0A.A0")]["description"] = "Functional subpackage UnitTest";
         $rtnArray[\hexdec("0A.A0")]["threshold"] = "0A.A0";
         //BetaCero

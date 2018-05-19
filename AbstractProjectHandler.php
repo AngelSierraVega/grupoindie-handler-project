@@ -10,7 +10,7 @@ use GIndie\ScriptGenerator\HTML5;
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package ProjectHandler
+ * @package GIndie\ProjectHandler
  *
  * @since 18-02-23
  * @edit 18-02-23
