@@ -15,7 +15,7 @@ namespace GIndie\ProjectHandler\Handler;
  * - Added code from GIndie\UnitTest\ClassTest\ReflectionInterface
  * - Updated interface
  * - Moved out methods.
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
  * @version 0A.0F

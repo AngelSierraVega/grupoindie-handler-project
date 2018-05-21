@@ -75,9 +75,9 @@ abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataD
         $rtnArray[\hexdec("0B.00")]["description"] = "Main funcionality";
         $rtnArray[\hexdec("0B.00")]["threshold"] = "0B.00";
         //One
-        $rtnArray[\hexdec("10.00")]["code"] = "One";
-        $rtnArray[\hexdec("10.00")]["description"] = "Final version";
-        $rtnArray[\hexdec("10.00")]["threshold"] = "10.00";
+        $rtnArray[\hexdec("0C.00")]["code"] = "One";
+        $rtnArray[\hexdec("0C.00")]["description"] = "Final version";
+        $rtnArray[\hexdec("0C.00")]["threshold"] = "0C.00";
         return $rtnArray;
     }
 

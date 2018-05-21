@@ -19,7 +19,7 @@ namespace GIndie\ProjectHandler\Handler;
  * - Implemented error on Unit Test not defined
  * @edit 18-02-??
  * - Updated handleTest()
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
  * - Upgraded uses and implementations

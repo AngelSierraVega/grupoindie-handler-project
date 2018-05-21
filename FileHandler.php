@@ -15,7 +15,7 @@ namespace GIndie\ProjectHandler;
  * @version 0A.50
  * @edit 18-05-19
  * - Functional constructor for defined private vars 
- * @version 0A.60
+ * @version 0A.61
  */
 class FileHandler implements DataDefinition\FileHandler
 {
@@ -47,6 +47,7 @@ class FileHandler implements DataDefinition\FileHandler
      * @since 18-05-18
      * @edit 18-05-19
      * - Added param $fileId
+     * - $currentVersion stores as "NDFND" when value = "UNDEFINED"
      * @todo
      * - Explode or optimize code
      */
@@ -84,6 +85,11 @@ class FileHandler implements DataDefinition\FileHandler
                 $this->currentVersion = $tmpDocComment["version"];
             }
         }
+        switch ($this->currentVersion)
+        {
+            case "UNDEFINED":
+                $this->currentVersion = "NDFND";
+        }
         $this->lastEdit = \date("y-m-d", $this->lastEdit);
         //Other
         $this->filetype = $this->setFileType();
@@ -120,6 +126,7 @@ class FileHandler implements DataDefinition\FileHandler
                 return static::FILETYPE_SCRIPT;
                 break;
             default:
+                return "NDF";
                 var_dump($this->contentTokens);
                 return "@todo";
                 break;

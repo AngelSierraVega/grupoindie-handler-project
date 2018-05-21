@@ -16,7 +16,7 @@ namespace GIndie\ProjectHandler\Handler;
  * - Updated traits
  * - Interfaces implemented.
  * - $unitTestCount implemented
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
  * - Upgraded uses and implementations

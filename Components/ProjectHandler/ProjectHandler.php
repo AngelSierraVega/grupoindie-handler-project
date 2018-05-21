@@ -55,17 +55,13 @@ class ProjectHandler extends \GIndie\ProjectHandler\AbstractProjectHandler
         $rtnArray[\hexdec("0A.A0")]["description"] = "Functional subpackage UnitTest";
         $rtnArray[\hexdec("0A.A0")]["threshold"] = "0A.A0";
         //BetaCero
-        $rtnArray[\hexdec("0B.00")]["code"] = "BetaCero";
         $rtnArray[\hexdec("0B.00")]["description"] = "Implemented VersionHandler and UnitTest";
-        $rtnArray[\hexdec("0B.00")]["threshold"] = "0B.00";
         //BetaCero-F
         $rtnArray[\hexdec("0B.F0")]["code"] = "BetaCero-F";
         $rtnArray[\hexdec("0B.F0")]["description"] = "Implemented ScriptGenerator";
         $rtnArray[\hexdec("0B.F0")]["threshold"] = "0B.F0";
         //One
-        $rtnArray[\hexdec("10.00")]["code"] = "One";
-        $rtnArray[\hexdec("10.00")]["description"] = "Version handling, phar administration and generation, and project unit test";
-        $rtnArray[\hexdec("10.00")]["threshold"] = "10.00";
+        $rtnArray[\hexdec("0C.00")]["description"] = "Version handling, phar administration and generation, and project unit test";
         \ksort($rtnArray);
         return $rtnArray;
     }

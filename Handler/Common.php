@@ -16,7 +16,7 @@ namespace GIndie\ProjectHandler\Handler;
  * - Moved out getTitle(), getDocComments(), validateTag(), $docComments
  * - Moved in validateDocComments()
  * - Added $unitTestCount
- * @version A0.00
+ * @version 0A.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
  * @version 0A.0F

@@ -62,10 +62,17 @@ class VersionHandler implements DataDefinition\VersionHandler
         $tmpCount = 0;
         foreach ($iterator as $value) {
             $fileHandlerTemp = $this->getFileHandler($value);
-            $this->projectBuild += \hexdec($fileHandlerTemp->getCurrentVersion());
             $this->fileHandler[$fileHandlerTemp->getPackage()][$fileHandlerTemp->getFileId()]
                     = $fileHandlerTemp;
-            $tmpCount++;
+            switch ($fileHandlerTemp->getCurrentVersion())
+            {
+                case "UNDEFINED":
+                    break;
+                default:
+                    $tmpCount++;
+                    $this->projectBuild += \hexdec($fileHandlerTemp->getCurrentVersion());
+                    break;
+            }
         }
         $this->projectBuild = ($this->projectBuild / $tmpCount);
         return true;
@@ -198,7 +205,10 @@ class VersionHandler implements DataDefinition\VersionHandler
         $preNode = HTML5\Format::preformatted("");
         $preNode->addContent("-------------------------------PACKAGE---------------------------------|\n");
         $preNode->addContent(" " . $this->projectHandler->getNamespace() . " v " . $this->getProjectVersion() . "\n");
-
+        $preNode->addContent("-------------------------------VERSIONS--------------------------------|\n");
+        foreach ($this->projectHandler->versions() as $tmpVersion) {
+            $preNode->addContent("[" . $tmpVersion["threshold"] . "] " . \str_pad($tmpVersion["code"], 13, ".") . "| " . $tmpVersion["description"] . "\n");
+        }
         $preNode->addContent("--------------------------------FILE-----------------------------|--V--|\n");
         foreach ($this->fileHandler as $packageId => $fileId) {
             foreach ($fileId as $fileHandler) {
