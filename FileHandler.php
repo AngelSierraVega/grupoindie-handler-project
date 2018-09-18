@@ -1,7 +1,5 @@
 <?php
 
-namespace GIndie\ProjectHandler;
-
 /**
  * GI-ProjectHandler-DVLP - FileHandler 
  *
@@ -11,14 +9,33 @@ namespace GIndie\ProjectHandler;
  * @package GIndie\ProjectHandler\FileHandler
  *
  * @since 18-05-16
+ * @version 0B.30
+ */
+
+namespace GIndie\ProjectHandler;
+
+/**
+ *
  * @edit 18-05-18
- * @version 0A.50
  * @edit 18-05-19
  * - Functional constructor for defined private vars 
- * @version 0A.61
+ * @edit 18-07-29
+ * - Created getBuild()
+ * @edit 18-09-18
+ * - Added getRealEdit()
  */
 class FileHandler implements DataDefinition\FileHandler
 {
+
+    /**
+     * 
+     * @return string
+     * @since 18-09-18
+     */
+    public function getRealEdit()
+    {
+        return \GIndie\Common\PHP\Date::fullDateFromTimestamp($this->splFileInfo->getMTime());
+    }
 
     /**
      *
@@ -53,6 +70,7 @@ class FileHandler implements DataDefinition\FileHandler
      */
     public function __construct($fileId, \SplFileInfo $splFileInfo)
     {
+        //$this->$splFileInfo->getMTime();
         //Define main vars
         $this->splFileInfo = $splFileInfo;
         $this->fullPath = $splFileInfo->getPathname();
@@ -105,24 +123,19 @@ class FileHandler implements DataDefinition\FileHandler
     {
         switch (true)
         {
-            case (\array_search(\T_ABSTRACT, \array_column($this->contentTokens, 0))
-            !== false):
+            case (\array_search(\T_ABSTRACT, \array_column($this->contentTokens, 0)) !== false):
                 return static::FILETYPE_ABSTRACT_CLASS;
                 break;
-            case (\array_search(\T_CLASS, \array_column($this->contentTokens, 0))
-            !== false):
+            case (\array_search(\T_CLASS, \array_column($this->contentTokens, 0)) !== false):
                 return static::FILETYPE_CLASS;
                 break;
-            case (\array_search(\T_INTERFACE, \array_column($this->contentTokens, 0))
-            !== false):
+            case (\array_search(\T_INTERFACE, \array_column($this->contentTokens, 0)) !== false):
                 return static::FILETYPE_INTERFACE;
                 break;
-            case (\array_search(\T_TRAIT, \array_column($this->contentTokens, 0))
-            !== false):
+            case (\array_search(\T_TRAIT, \array_column($this->contentTokens, 0)) !== false):
                 return static::FILETYPE_TRAIT;
                 break;
-            case (\array_search(\T_OPEN_TAG, \array_column($this->contentTokens, 0))
-            !== false):
+            case (\array_search(\T_OPEN_TAG, \array_column($this->contentTokens, 0)) !== false):
                 return static::FILETYPE_SCRIPT;
                 break;
             default:
@@ -238,6 +251,29 @@ class FileHandler implements DataDefinition\FileHandler
     public function getCurrentVersion()
     {
         return $this->currentVersion;
+    }
+
+    /**
+     * @return null|number The decimal representation of the current version
+     * @since 18-07-29
+     */
+    public function getBuild()
+    {
+        $rntVal;
+        switch ($this->currentVersion)
+        {
+            case "NDFND":
+            case "DEPRECATED":
+                $rntVal = null;
+                break;
+            default:
+                $rntVal = \hexdec($this->currentVersion);
+                break;
+        }
+        if (\strstr($this->currentVersion, "DOING") !== false) {
+            $rntVal = null;
+        }
+        return $rntVal;
     }
 
     /**

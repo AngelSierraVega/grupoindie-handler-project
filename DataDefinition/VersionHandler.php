@@ -1,7 +1,5 @@
 <?php
 
-namespace GIndie\ProjectHandler\DataDefinition;
-
 /**
  * GI-ProjectHandler-DVLP - VersionHandler 
  *
@@ -11,7 +9,14 @@ namespace GIndie\ProjectHandler\DataDefinition;
  * @package GIndie\ProjectHandler\VersionHandler
  *
  * @since 18-05-17
- * @version 0A.50
+ * @version 0B.00
+ */
+
+namespace GIndie\ProjectHandler\DataDefinition;
+
+/**
+ * @edit 18-09-18
+ * - Upgraded class's dockblock
  */
 interface VersionHandler
 {

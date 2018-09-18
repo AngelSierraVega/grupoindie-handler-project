@@ -4,18 +4,20 @@
  * GI-ProjectHandler-DVLP - FileHandlerConstants 
  *
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  *
  * @package GIndie\ProjectHandler\FileHandler
+ * @version 0B.00
  * 
- * @version 0A.50
+ * @since 18-05-18
  */
 
 namespace GIndie\ProjectHandler\DataDefinition;
 
 /**
- *
- * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @since 18-05-18
+ * 
+ * @edit 18-09-18
+ * - Upgraded class's Docblock
  */
 interface FileHandlerConstants
 {
@@ -24,7 +26,7 @@ interface FileHandlerConstants
      * @since 18-05-18
      */
     const FILETYPE_SCRIPT = "SCR";
-    
+
     /**
      * @since 18-05-18
      */

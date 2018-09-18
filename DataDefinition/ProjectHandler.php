@@ -1,32 +1,35 @@
 <?php
 
-namespace GIndie\ProjectHandler\DataDefinition;
-
 /**
- * DVLP-GICommon - ProjectHandlerInterface
+ * GI-ProjectHandler-DVLP - ProjectHandler 
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package GIndie\ProjectHandler\DataDefinition
+ * @package GIndie\ProjectHandler\Main
  *
  * @since 18-02-23
+ * @version 0B.00
+ */
+
+namespace GIndie\ProjectHandler\DataDefinition;
+
+/**
+ * 
  * @edit 18-02-23
  * - Added methods from UnitTest\GIndie\UnitTest\Handler\InterfaceProject
  * @edit 18-03-27
  * - Added excludeFromPhar();
- * @version 0A.00
  * @edit 18-05-13
  * - Moved class from external project GI-Common
- * @version 0A.F0
  * @edit 18-05-17
  * - Renamed interface from ProjectHandlerInterface to ProjectHandler
  * - Upgraded file structure and namespace for A.1
  * - Added versions(), execVersionHandler()
- * @version 0A.10
  * @edit 18-05-19
  * - Revised Project packages
- * @version 0A.50
+ * @edit 18-09-18
+ * - Upgraded class's Docblock
  */
 interface ProjectHandler
 {
@@ -78,7 +81,6 @@ interface ProjectHandler
     /**
      * 
      * @since 18-02-23
-     * @edit GI-CMMN.00.02
      */
     public static function autoloaderFilename();
 

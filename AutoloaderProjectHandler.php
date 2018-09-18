@@ -6,15 +6,17 @@
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
- * @package GIndie\ProjectHandler
+ * @package GIndie\ProjectHandler\ProjectDefinition
+ * 
+ * @version 0B.00
  *
  * @since 18-05-13
  * @edit 18-05-13
  * - Added code from GI-SG-DML
- * @version 0A.10
  * @edit 18-05-19
  * - Revised Project packages
- * @version 0A.60
+ * @edit 18-09-18
+ * - Removed autoload of deprecated class
  */
 
 namespace GIndie\ProjectHandler;
@@ -39,5 +41,7 @@ namespace GIndie\ProjectHandler;
 /**
  * Fixed requires
  * @since 18-05-13
+ * @deprecated since 18-09-18
+ * require_once(__DIR__ . "/Deprecated/ProjectHandler.php");
  */
-require_once(__DIR__ . "\\Deprecated\\ProjectHandler.php");
+

@@ -4,20 +4,23 @@
  * GI-ProjectHandler-DVLP - FileHandler 
  *
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  *
  * @package GIndie\ProjectHandler\FileHandler
+ * @version 0B.00
  */
 
 namespace GIndie\ProjectHandler\DataDefinition;
 
 /**
  * 
- * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
+ * 
  * @since 18-05-18
- * @version 0A.50
  * @edit 18-05-19
  * - Updated __construct()
- * @version 0A.60
+ * @edit 18-09-18
+ * - Upgraded class's Docblock
+ * 
  */
 interface FileHandler extends FileHandlerConstants
 {

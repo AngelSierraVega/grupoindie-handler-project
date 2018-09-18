@@ -1,9 +1,5 @@
 <?php
 
-namespace GIndie\ProjectHandler;
-
-use GIndie\ScriptGenerator\HTML5;
-
 /**
  * GI-ProjectHandler-DVLP - VersionHandler 
  *
@@ -13,11 +9,22 @@ use GIndie\ScriptGenerator\HTML5;
  * @package GIndie\ProjectHandler\VersionHandler
  *
  * @since 18-05-17
- * @version 0A.50
+ * @version 0B.00
+ */
+
+namespace GIndie\ProjectHandler;
+
+use GIndie\ScriptGenerator\HTML5;
+
+/**
+ * 
  * @edit 18-05-19
  * - Sepparated tables into MainPackage and Subpackage
  * - Added protected/private methods for displaying the results
- * @version 0A.60
+ * @edit 18-07-29
+ * - Use getBuild()
+ * @edit 18-09-18
+ * - Added getFormattedPackageVersion()
  */
 class VersionHandler implements DataDefinition\VersionHandler
 {
@@ -51,9 +58,11 @@ class VersionHandler implements DataDefinition\VersionHandler
      * @edit 18-05-19
      * - Handle storing of $fileHandler['package']['file_id']
      * - Abstracted code for RecursiveIteratorIterator into \GIndie\Common\PHP\Files
-     * @todo
      * - Skip UNDEFINED
-     * - Handle DOING ?
+     * @edit 18-05-21
+     * - Skip DOING
+     * @edit 18-07-29
+     * - Use getBuild()
      */
     private function handleFiles($pathToSourceCode)
     {
@@ -62,16 +71,11 @@ class VersionHandler implements DataDefinition\VersionHandler
         $tmpCount = 0;
         foreach ($iterator as $value) {
             $fileHandlerTemp = $this->getFileHandler($value);
-            $this->fileHandler[$fileHandlerTemp->getPackage()][$fileHandlerTemp->getFileId()]
-                    = $fileHandlerTemp;
-            switch ($fileHandlerTemp->getCurrentVersion())
-            {
-                case "UNDEFINED":
-                    break;
-                default:
-                    $tmpCount++;
-                    $this->projectBuild += \hexdec($fileHandlerTemp->getCurrentVersion());
-                    break;
+            $this->fileHandler[$fileHandlerTemp->getPackage()][$fileHandlerTemp->getFileId()] = $fileHandlerTemp;
+            $tmpBuild = $fileHandlerTemp->getBuild();
+            if (\is_numeric($tmpBuild)) {
+                $tmpCount++;
+                $this->projectBuild += $tmpBuild;
             }
         }
         $this->projectBuild = ($this->projectBuild / $tmpCount);
@@ -160,7 +164,13 @@ class VersionHandler implements DataDefinition\VersionHandler
         $header = $versionsTable->getHeader();
         $header->addRow(["Threshold", "Code", "Description", "Status"]);
         foreach ($this->projectHandler->versions() as $tmpVersion) {
-            $versionsTable->addRow([$tmpVersion["threshold"], $tmpVersion["code"], $tmpVersion["description"], "@todo"]);
+            $advance = \hexdec($tmpVersion["threshold"]) . "-----" . $this->projectBuild;
+            $advance = $this->projectBuild / \hexdec($tmpVersion["threshold"]);
+            if ($advance > 1) {
+                $advance = 1;
+            }
+            $advance = $advance * 100;
+            $versionsTable->addRow([$tmpVersion["threshold"], $tmpVersion["code"], $tmpVersion["description"], $advance]);
         }
         return $versionsTable;
     }
@@ -169,10 +179,22 @@ class VersionHandler implements DataDefinition\VersionHandler
      * 
      * @return \GIndie\ScriptGenerator\Dashboard\Tables\Table
      * @since 18-05-19
+     * @deprecated since 18-08-04
      */
-    protected function dspTableMainPackage()
+    protected function dspTableMainPackageDPR()
     {
         return new \GIndie\ScriptGenerator\Dashboard\Tables\Table();
+    }
+
+    /**
+     * 
+     * @param type $subpackageId
+     * @return type
+     * @since 18-09-18
+     */
+    protected function getFormattedPackageVersion($subpackageId)
+    {
+        return substr_replace(\str_pad(\strtoupper(\dechex($this->getPackageVersion($subpackageId))), 4, "0", \STR_PAD_LEFT), ".", 2, 0);
     }
 
     /**
@@ -180,16 +202,18 @@ class VersionHandler implements DataDefinition\VersionHandler
      * @param string $subpackageId
      * @return \GIndie\ScriptGenerator\Dashboard\Tables\Table
      * @since 18-05-19
+     * @edit 18-07-29
+     * - Use getBuild()
      */
     protected function dspTableSubpackage($subpackageId)
     {
         $rtnNode = new HTML5\Tables\Table();
         $rtnNode->addClass("table table-bordered table-condensed");
-        $rtnNode->addHeader(HTML5\Tables::cellHeader($subpackageId . " |  v @getPackageVersion()")->setAttribute("colspan", "5"));
+        $rtnNode->addHeader(HTML5\Tables::cellHeader($subpackageId . " |  v " . $this->getFormattedPackageVersion($subpackageId) . " (" . $this->getPackageVersion($subpackageId) . ")")->setAttribute("colspan", "5"));
         $header = $rtnNode->getHeader();
-        $header->addRow(["File type", "Current version", "File", "Build (#)", "Last edit"]);
+        $header->addRow(["File type", "Current version", "File", "Last edit", "Real edit"]);
         foreach ($this->fileHandler[$subpackageId] as $key => $value) {
-            $rtnNode->addRow([$value->getFiletype(), $value->getCurrentVersion(), $value->getFileId(), \hexdec($value->getCurrentVersion()), $value->getLastEdit()]);
+            $rtnNode->addRow([$value->getFiletype(), $value->getCurrentVersion() . " (" . $value->getBuild() . ")", $value->getFileId(), $value->getLastEdit(), $value->getRealEdit()]);
         }
         return $rtnNode;
         return new \GIndie\ScriptGenerator\Dashboard\Tables\Table();
@@ -236,18 +260,34 @@ class VersionHandler implements DataDefinition\VersionHandler
 
     /**
      * @since 18-05-17
+     * @edit 18-09-18
      */
     public function getProjectVersion()
     {
-        return \dechex($this->projectBuild) . " (" . $this->projectBuild . ")";
+        return substr_replace(\str_pad(\strtoupper(\dechex($this->projectBuild)), 4, "0", \STR_PAD_LEFT), ".", 2, 0);
+        //return \dechex($this->projectBuild) . " (" . $this->projectBuild . ")";
     }
 
     /**
      * @since 18-05-17
+     * @edit 18-07-29
+     * - Implemented funcionality
      */
     public function getPackageVersion($packageId)
     {
-        return "todo";
+        $pkgBuild = 0;
+        $tmpCount = 0;
+        foreach ($this->fileHandler[$packageId] as $key => $value) {
+            $tmpBuild = $value->getBuild();
+            if (\is_numeric($tmpBuild)) {
+                $tmpCount++;
+                $pkgBuild += $tmpBuild;
+            }
+        }
+        if ($tmpCount == 0) {
+            return "NDFND";
+        }
+        return $pkgBuild / $tmpCount;
     }
 
     /**

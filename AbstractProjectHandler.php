@@ -1,18 +1,22 @@
 <?php
+/**
+ * GI-ProjectHandler-DVLP - AbstractProjectHandler
+ *
+ * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
+ * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ *
+ * @package GIndie\ProjectHandler\Main
+ * 
+ * @version 0B.00
+ * @since 18-02-23
+ */
 
 namespace GIndie\ProjectHandler;
 
 use GIndie\ScriptGenerator\HTML5;
 
 /**
- * ProjectHandler
- *
- * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
- *
- * @package GIndie\ProjectHandler
- *
- * @since 18-02-23
+ * AbstractProjectHandler
  * @edit 18-02-23
  * - Abstract class
  * - Implemented ProjectHandlerInterface
@@ -20,11 +24,9 @@ use GIndie\ScriptGenerator\HTML5;
  * - Updated autoloaderFilename()
  * @edit 18-03-27
  * - Added excludeFromPhar();
- * @version 0A.00
  * @edit 18-05-13
  * - Moved class from external project GI-Common
  * - Class implements ProjectHandler\Handler\InterfaceHandler and ProjectHandler\Handler\InterfaceProject
- * @version 0A.0F
  * @edit 18-05-16
  * - Created addRowsFromFolder(), displayCurrentLog()
  * @edit 18-05-17
@@ -34,7 +36,8 @@ use GIndie\ScriptGenerator\HTML5;
  * @edit 18-05-18
  * - Removed deprecated methods addRowsFromFolder(), displayCurrentLog()
  * - Funcional VersionHandler
- * @version 0A.50
+ * @edit 18-09-18
+ * - Upgraded Dockblock
  */
 abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataDefinition\ProjectHandler
 {
