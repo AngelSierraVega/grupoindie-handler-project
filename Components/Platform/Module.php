@@ -9,7 +9,8 @@
  * @package GIndie\ProjectHandler\Main
  *
  * @since 18-02-23
- * @version 0B.00
+ * @version DOING 
+ * @todo Debug error on request phar
  */
 
 namespace GIndie\ProjectHandler\Components\Platform;
@@ -33,33 +34,37 @@ use GIndie\Platform\View\Input;
  * - Copied class from GIndie\FrameworkInstance\ProjectHandler
  * @edit 18-09-18
  * - Upgraded class Docblock
+ * @edit 18-11-01
+ * - Removed displayProjectInformation()
  * @todo
+ * - Test Phar creation
  * - Display To do list in VersionHandler widget
  */
 abstract class Module extends \GIndie\Platform\Controller\Module
 {
+    public static function description()
+    {
+        return "NA";
+    }
+
+    public static function name()
+    {
+        return static::NAME;
+    }
 
     /**
      *
-     * @var \GIndie\ProjectHandler 
+     * @varDPR \GIndie\ProjectHandler\AbstractProjectHandler
      * @since 18-02-24
      */
-    protected $projectHandler;
+    protected $projectHandlerDPR;
 
     /**
-     * 
-     * @return type
-     * @since 18-02-24
+     *
+     * @var \GIndie\ProjectHandler\VersionHandler
+     * @since 18-09-18
      */
-    private function displayProjectInformation()
-    {
-        $rntContent = new \GIndie\ScriptGenerator\Bootstrap3\Tables\Table();
-        $row = new \GIndie\ScriptGenerator\Bootstrap3\Tables\Row();
-        $row->addContent("pathToSourceCode");
-        $row->addContent($this->projectHandler->pathToSourceCode());
-        $rntContent->addRow($row);
-        return $rntContent;
-    }
+    protected $versionHandlerDPR;
 
     /**
      * 
@@ -90,12 +95,80 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * - Added UnitTest widget
      * @edit 18-06-24
      * - Use placeholder()
+     * @edit 18-11-01
+     * - Upgraded placeholders to callable
+     * @edit 18-11-05
+     * - Added wdgtInfo
+     * @edit 18-12-07
+     * - Upgraded from config() to configPlaceholders()
      */
-    public function config()
+    public function configPlaceholders()
     {
-        $this->placeholder("i-i-i")->typeHTMLString("[ProjectHandler]");
-        $this->placeholder("ii-i-i")->typeHTMLString("[VersionHandler]");
-        $this->placeholder("iii-i-i")->typeHTMLString("[UnitTest]");
+        $this->placeholder("o-o-o")->typeCallable([$this, "wdgtModuleInfo"]);
+        $this->placeholder("i-ii-i")->typeCallable([$this, "wdgtProjectInformation"]);
+        $this->placeholder("i-ii-ii")->typeCallable([$this, "wdgtDoing"]);
+        $this->placeholder("ii-i-i")->typeCallable([$this, "wdgtVersion"]);
+        $this->placeholder("iii-i-i")->typeCallable([$this, "wdgtUnitTest"]);
+    }
+    
+    public function wdgtModuleInfo()
+    {
+        $projectHandler = static::projectHandler();
+        $this->projectHandler = new $projectHandler();
+        \date_default_timezone_set("America/Mexico_City");
+        $this->versionHandler = $this->projectHandler->execVersionHandler();
+        return parent::wdgtModuleInfo();
+    }
+
+    /**
+     * @return \GIndie\Platform\View\Widget
+     * @since 18-11-01
+     * - Moved from widgetReload()
+     * - Added code from displayProjectInformation()
+     * - use Framework\View\Table::displayArray
+     * - Added display of Types of File
+     */
+    public function wdgtProjectInformation()
+    {
+        
+        $widget = new \GIndie\Platform\View\Widget("Project information", false, true, false, true);
+        $display = [];
+        $display["Current version"] = $this->versionHandler->getProjectVersion();
+        $display["Path to source code"] = $this->projectHandler->pathToSourceCode();
+        $display["Lines of Code"] = $this->versionHandler->getLOC();
+        $display["Types of file"] = $this->versionHandler->dspFileTypes();
+        $widget->getBody()->addContent(\GIndie\Framework\View\Table::displayArray($display));
+        $button = \GIndie\Platform\View\Widget\Buttons::Custom("success", "Create phar", "REQUEST-PHAR", null, true);
+        $widget->addButtonHeading($button);
+//        $button = \GIndie\Platform\View\Widget\Buttons::Reload();
+//        $widget->addButtonHeading($button);
+        $widget->setContext("primary");
+        return $widget;
+    }
+
+    /**
+     * @return \GIndie\Platform\View\Widget
+     * @since 18-11-01
+     */
+    public function wdgtDoing()
+    {
+        $widget = new \GIndie\Platform\View\Widget("Doing", false, true, false, true);
+        $table = new \GIndie\Framework\View\Table();
+        $table->addClass("table-condensed");
+        $table->addHeader(["File", "Declared edit", "Real edit", "Version"]);
+        foreach ($this->versionHandler->getAttentionFiles() as $fileHandler) {
+            switch ($fileHandler->getCurrentVersion())
+            {
+                case "DOING":
+                    $table->addRow([$fileHandler->getFileId(), $fileHandler->getLastEdit(), $fileHandler->getRealEdit(), $fileHandler->getCurrentVersion()]);
+                    break;
+                default:
+                    break;
+            }
+        }
+        $widget->getBody()->addContent($table);
+        $widget->setContext("primary");
+        return $widget;
     }
 
     /**
@@ -103,14 +176,32 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * @return \GIndie\Platform\View\Widget
      * @edit 18-05-17
      * - Use $this->projectHandler->execVersionHandler()
+     * @edit 18-11-01
+     * - Use internal versionHandler
      */
-    protected function wdgtVersion()
+    public function wdgtVersion()
     {
-        $versionHandler = $this->projectHandler->execVersionHandler();
-        $widget = new \GIndie\Platform\View\Widget("Project version", false,
-                                                   \array_values($versionHandler->getHtmlResults()),
-                                                                 false, true);
+        //$versionHandler = $this->projectHandler->execVersionHandler();
+        $widget = new \GIndie\Platform\View\Widget("Project version", false, \array_values($this->versionHandler->getHtmlResults()), false, true);
         $widget->setContext("info");
+        return $widget;
+    }
+
+    /**
+     * 
+     * @return \GIndie\Platform\View\Widget
+     * @since 18-11-01
+     * - Moved from widgetReload()
+     */
+    public function wdgtUnitTest()
+    {
+        $this->projectHandler->execUnitTest();
+        $widget = new \GIndie\Platform\View\Widget("Project Unit Test", false, $this->projectHandler->unitTestResult);
+        if ($this->projectHandler->unitTestStatus === true) {
+            $widget->setContext("success");
+        } else {
+            $widget->setContext("warning");
+        }
         return $widget;
     }
 
@@ -126,40 +217,21 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * @edit 18-05-16
      * - Updated UnitTest widget
      * - Use wdgtVersion()
+     * @deprecated since 18-11-01
      */
-    protected function widgetReload($id, $class, $selected)
+    protected function widgetReloadDPR($id, $class, $selected)
     {
         switch ($id)
         {
-            case "i-i-i":
-                $projectHandler = static::projectHandler();
-                $this->projectHandler = new $projectHandler();
-                $widget = new \GIndie\Platform\View\Widget("Project information",
-                                                           false,
-                                                           $this->displayProjectInformation(),
-                                                           false, true);
-                $button = \GIndie\Platform\View\Widget\Buttons::Custom("success",
-                                                                       "Create phar",
-                                                                       "REQUEST-PHAR",
-                                                                       null,
-                                                                       true);
-                $widget->addButtonHeading($button);
-                $widget->setContext("primary");
-                break;
-            case "ii-i-i":
-                $widget = static::wdgtVersion();
-                break;
-            case "iii-i-i":
-                $this->projectHandler->execUnitTest();
-                $widget = new \GIndie\Platform\View\Widget("Project Unit Test",
-                                                           false,
-                                                           $this->projectHandler->unitTestResult);
-                if ($this->projectHandler->unitTestStatus === true) {
-                    $widget->setContext("success");
-                } else {
-                    $widget->setContext("warning");
-                }
-                break;
+//            case "i-i-i":
+//
+//                break;
+//            case "ii-i-i":
+//                $widget = static::wdgtVersion();
+//                break;
+//            case "iii-i-i":
+//
+//                break;
             default:
                 $widget = parent::widgetReload($id, $class, $selected);
                 break;
@@ -191,35 +263,26 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * @return type
      * @since 18-02-24
      */
-    protected function pharCreationRequest()
+    protected function pharCreationRequestDPR()
     {
         $form = new \GIndie\Platform\View\Form();
         $form->setAttribute("gip-action", "CREATE-PHAR");
         $form->setAttribute("target", "#gip-modal .modal-content");
 
-        $inputDistPath = Input::Text("dist-folder", $this->pathToDistFolder(),
-                                     true, false,
-                                     "ALT C:\\Users\\angel_000\\Dropbox\\srcs\\prdc\\SistemaIntegralIngresos");
-        $form->addContent(Input::FomGroupClean("Distribution folder",
-                                               "dist-folder", $inputDistPath));
+        $inputDistPath = Input::Text("dist-folder", $this->pathToDistFolder(), true, false, "ALT C:\\Users\\angel_000\\Dropbox\\srcs\\prdc\\SistemaIntegralIngresos");
+        $form->addContent(Input::FomGroupClean("Distribution folder", "dist-folder", $inputDistPath));
 
         $namespace = $this->projectHandler->getNamespace();
         $namespace = \str_replace("\\", DIRECTORY_SEPARATOR, $namespace);
-        $inputLocalPath = Input::Text("local-path", $namespace, true, false,
-                                      "ALT \\private\\libs  ..\\ScriptGenerator  ..\\ScriptGeneratorNew");
-        $form->addContent(Input::FomGroupClean("Local path", "local-path",
-                                               $inputLocalPath));
+        $inputLocalPath = Input::Text("local-path", $namespace, true, false, "ALT \\private\\libs  ..\\ScriptGenerator  ..\\ScriptGeneratorNew");
+        $form->addContent(Input::FomGroupClean("Local path", "local-path", $inputLocalPath));
 
 
-        $inputFilename = Input::Text("filename", $this->pharFilename(), true,
-                                     false);
-        $form->addContent(Input::FomGroupClean("Filename", "filename",
-                                               $inputFilename));
+        $inputFilename = Input::Text("filename", $this->pharFilename(), true, false);
+        $form->addContent(Input::FomGroupClean("Filename", "filename", $inputFilename));
 
-        $modal = \GIndie\Platform\View\Modal\Content::primary("Create phar file?",
-                                                              $form);
-        $btn = new \GIndie\Generator\DML\HTML5\Bootstrap3\Component\Button("Create phar",
-                                                                           "submit");
+        $modal = \GIndie\Platform\View\Modal\Content::primary("Create phar file?", $form);
+        $btn = new \GIndie\Generator\DML\HTML5\Bootstrap3\Component\Button("Create phar", "submit");
         $btn->setForm($form->getId())->setValue("Submit");
         $btn->setContext("success");
         $modal->addFooterButton($btn);
@@ -238,7 +301,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * @edit 18-03-28
      * - Removed UTF-8 encoding
      */
-    protected function pharCreationAction()
+    protected function pharCreationActionDPR()
     {
         $pathToPhar = $_POST["dist-folder"] . $_POST["local-path"] . $_POST["filename"];
         $srcRoot = $this->projectHandler->pathToSourceCode();
@@ -246,8 +309,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
             if (!\file_exists($srcRoot . $this->projectHandler->autoloaderFilename())) {
                 throw new \Exception("Unable to read " . $srcRoot . $this->projectHandler->autoloaderFilename());
             } else {
-                if (\GIndie\Common\PHP\Directories::createFolderStructure($_POST["dist-folder"],
-                                                                          $_POST["local-path"])) {
+                if (\GIndie\Common\PHP\Directories::createFolderStructure($_POST["dist-folder"], $_POST["local-path"])) {
                     $srcRoot = \realpath($srcRoot);
                     $exclude = $this->projectHandler->excludeFromPhar();
                     $filter = function ($file, $key, $iterator) use ($exclude) {
@@ -260,29 +322,12 @@ abstract class Module extends \GIndie\Platform\Controller\Module
                             $srcRoot, \RecursiveDirectoryIterator::SKIP_DOTS
                     );
                     $iterator = new \RecursiveIteratorIterator(
-                            new \RecursiveCallbackFilterIterator($innerIterator,
-                                                                 $filter)
+                            new \RecursiveCallbackFilterIterator($innerIterator, $filter)
                     );
-//                    $iterator->rewind();
-//                    $strTmp = "";
-//                    while ($iterator->valid()) {
-//                        switch (true)
-//                        {
-//                            default:
-//                                $strTmp .= '<p>SubPathName: ' . $iterator->getSubPathName() . "</p>";
-//                                $strTmp .= '<p>SubPath:     ' . $iterator->getSubPath() . "</p>";
-//                                $strTmp .= '<p>Key:         ' . $iterator->key() . "</p>";
-//                                $strTmp .= "<p>----------------------------------------</p>";
-//                                break;
-//                        }
-//                        $iterator->next();
-//                    }
-//                    return \GIndie\Platform\View\Modal\Content::warning("todo", $strTmp);
                     if (\file_exists($pathToPhar)) {
                         \unlink($pathToPhar);
                     }
-                    $phar = new \Phar($pathToPhar, 0,
-                                      \substr($_POST["filename"], 1));
+                    $phar = new \Phar($pathToPhar, 0, \substr($_POST["filename"], 1));
                     $phar->buildFromIterator($iterator, $srcRoot);
                     $phar->setStub($phar->createDefaultStub($this->projectHandler->autoloaderFilename()));
                     $phar->compressFiles(\Phar::BZ2);
@@ -293,8 +338,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
                      * \file_put_contents($pathToPhar, $data);
                      */
                     if (\file_exists($pathToPhar)) {
-                        $modal = \GIndie\Platform\View\Modal\Content::succcess("Phar created",
-                                                                               $pathToPhar);
+                        $modal = \GIndie\Platform\View\Modal\Content::succcess("Phar created", $pathToPhar);
                     } else {
                         throw new \Exception($pathToPhar);
                     }
@@ -303,8 +347,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
                 }
             }
         } catch (\Exception $exc) {
-            $modal = \GIndie\Platform\View\Modal\Content::danger("Phar NOT created",
-                                                                 $exc->getMessage());
+            $modal = \GIndie\Platform\View\Modal\Content::danger("Phar NOT created", $exc->getMessage());
         }
         return $modal;
     }
@@ -317,12 +360,17 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * - Function has single return
      * - Use pharCreationAction(), pharCreationRequest()
      */
-    public function run($action, $id, $class, $selected)
+    public function runDPR($action, $id, $class, $selected)
     {
+
+//        throw new \Exception($action);
         $rtnAction = null;
         switch ($action)
         {
             case "REQUEST-PHAR":
+//                $projectHandler = static::projectHandler();
+//                $this->projectHandler = new $projectHandler();
+//                throw new \Exception("REQUEST-PHAR");
                 $rtnAction = $this->pharCreationRequest();
                 break;
             case "CREATE-PHAR":

@@ -24,6 +24,7 @@ namespace GIndie\ProjectHandler\Handler;
  * - Upgraded file structure and namespace
  * - Upgraded uses and implementations
  * @version 0A.0F
+ * @version 0A.30
  * @todo
  * - Upgrade/verify structure for A1
  */
@@ -56,6 +57,8 @@ class HandlerMethod extends \ReflectionMethod implements InterfaceHandler, Refle
      * 
      * @param \ReflectionMethod $Method
      * @return string Description
+     * @edit 18-11-26
+     * - Handle Skip
      */
     public function execUnitTest()
     {
@@ -82,12 +85,12 @@ class HandlerMethod extends \ReflectionMethod implements InterfaceHandler, Refle
             <caption><?= $this->getName(); ?></caption>
             <tr>
                 <?= $this->validateTag("description", "2"); ?>
-        <?= $this->validateTag("link", "1"); ?>
+                <?= $this->validateTag("link", "1"); ?>
             </tr>
             <tr>
                 <?= $this->validateTag("return"); ?>
                 <?= $this->validateTag("since"); ?>
-            <?= $this->validateTag("version"); ?>
+                <?= $this->validateTag("version"); ?>
             </tr>
             <?php
             if (isset($this->docComments["edit"])) {
@@ -107,14 +110,25 @@ class HandlerMethod extends \ReflectionMethod implements InterfaceHandler, Refle
             </tr>
             <?php
             $this->unitTestStatus = true;
-            if (isset($this->docComments["unit_test"])) {
-                foreach ($this->docComments["unit_test"] as $utKey => $utData) {
-                    //\var_dump($this->docComments["unit_test"]);
-                    echo $this->handleTest($utKey, $utData);
+            $skipMethod = false;
+            switch (true)
+            {
+                case isset($this->docComments["ut_skip"]):
+                case $this->isPrivate():
+                    $skipMethod = true;
+                    break;
+            }
+//            var_dump($this->docComments);
+            if (!$skipMethod) {
+                if (isset($this->docComments["unit_test"])) {
+                    foreach ($this->docComments["unit_test"] as $utKey => $utData) {
+                        //\var_dump($this->docComments["unit_test"]);
+                        echo $this->handleTest($utKey, $utData);
+                    }
+                } else {
+                    $this->unitTestStatus = false;
+                    $this->unitTestLastError = "Unit test not declared for method " . $this->name;
                 }
-            } else {
-                $this->unitTestStatus = false;
-                $this->unitTestLastError = "Unit test not declared for method " . $this->name;
             }
             ?>
         </table>
@@ -171,7 +185,8 @@ class HandlerMethod extends \ReflectionMethod implements InterfaceHandler, Refle
                     default:
                         $factory = new self($class, $method);
                         $docComments = $factory->getDocComments();
-                        $factory = $factory->invokeArgs(null, $docComments["unit_test"][$testId]["parameters"]);
+                        $factory = $factory->invokeArgs(null,
+                                                        $docComments["unit_test"][$testId]["parameters"]);
                         $result = $this->invokeArgs($factory, $parameters) . "";
                         break;
                 }

@@ -9,7 +9,7 @@
  * @package GIndie\ProjectHandler\FileHandler
  *
  * @since 18-05-16
- * @version 0B.30
+ * @version 0B.70
  */
 
 namespace GIndie\ProjectHandler;
@@ -23,6 +23,10 @@ namespace GIndie\ProjectHandler;
  * - Created getBuild()
  * @edit 18-09-18
  * - Added getRealEdit()
+ * - Handle DEPRECATED and DOING versions
+ * - Added getLOC()
+ * @edit 18-09-25
+ * - Fixed bugs in build
  */
 class FileHandler implements DataDefinition\FileHandler
 {
@@ -34,7 +38,7 @@ class FileHandler implements DataDefinition\FileHandler
      */
     public function getRealEdit()
     {
-        return \GIndie\Common\PHP\Date::fullDateFromTimestamp($this->splFileInfo->getMTime());
+        return \GIndie\Common\PHP\Date::reducedDateFromTimestamp($this->splFileInfo->getMTime());
     }
 
     /**
@@ -54,9 +58,26 @@ class FileHandler implements DataDefinition\FileHandler
     /**
      *
      * @var array 
+     * @since 18-09-18
+     */
+    private $contentArray;
+
+    /**
+     *
+     * @var array 
      * @since 18-05-18
      */
     private $contentTokens;
+
+    /**
+     * 
+     * @return int
+     * @since 18-09-18
+     */
+    public function getLOC()
+    {
+        return \count($this->contentArray);
+    }
 
     /**
      * @param string $fileId
@@ -65,6 +86,12 @@ class FileHandler implements DataDefinition\FileHandler
      * @edit 18-05-19
      * - Added param $fileId
      * - $currentVersion stores as "NDFND" when value = "UNDEFINED"
+     * @edit 18-09-18
+     * - $currentVersion stores as "DOING" when value contains = "DOING"
+     * - $currentVersion stores as "DPRCT" when value = "DEPRECATED"
+     * - Stores $this->contentArray
+     * @edit 18-09-25
+     * - Fixed version bug in filetype = 'NDF'
      * @todo
      * - Explode or optimize code
      */
@@ -76,10 +103,15 @@ class FileHandler implements DataDefinition\FileHandler
         $this->fullPath = $splFileInfo->getPathname();
         //Read file contents, tokenize them and parse doc comments
         $this->contentRaw = \file_get_contents($this->fullPath);
+        $this->contentArray = \file($this->fullPath, \FILE_SKIP_EMPTY_LINES);
         $this->contentTokens = \token_get_all($this->contentRaw);
+//        var_dump(token_name(382));
+//        var_dump($this->contentTokens);
+        //trigger_error("test", \E_USER_ERROR);
         $this->docComment = $this->setDocComments();
         //find last edit
         $this->lastEdit = \strtotime("00-05-05");
+        $this->filetype = $this->setFileType();
         foreach ($this->docComment as $tmpDocComment) {
             if (isset($tmpDocComment["edit"])) {
                 foreach ($tmpDocComment["edit"] as $tmpEdit) {
@@ -107,10 +139,23 @@ class FileHandler implements DataDefinition\FileHandler
         {
             case "UNDEFINED":
                 $this->currentVersion = "NDFND";
+                break;
+            case "DEPRECATED":
+                $this->currentVersion = "DPRCT";
+                break;
+        }
+        switch ($this->filetype)
+        {
+            case "NDF":
+                $this->currentVersion = "NDFND";
+                break;
+        }
+        if (\strstr($this->currentVersion, "DOING") !== false) {
+            $this->currentVersion = "DOING";
         }
         $this->lastEdit = \date("y-m-d", $this->lastEdit);
         //Other
-        $this->filetype = $this->setFileType();
+
         $this->setFileId($fileId);
     }
 
@@ -118,6 +163,10 @@ class FileHandler implements DataDefinition\FileHandler
      * 
      * @return string
      * @since 18-05-17
+     * @edit 18-09-25
+     * - Graciously handle FILETYPE_UNDEFINED
+     * @todo
+     * - Single return statement
      */
     private function setFileType()
     {
@@ -138,10 +187,12 @@ class FileHandler implements DataDefinition\FileHandler
             case (\array_search(\T_OPEN_TAG, \array_column($this->contentTokens, 0)) !== false):
                 return static::FILETYPE_SCRIPT;
                 break;
+            case (\strcmp($this->splFileInfo->getExtension(), "log") == 0):
+                $this->currentVersion = "NDFND";
+                return static::FILETYPE_LOG;
+                break;
             default:
-                return "NDF";
-                var_dump($this->contentTokens);
-                return "@todo";
+                return static::FILETYPE_UNDEFINED;
                 break;
         }
     }
@@ -256,22 +307,25 @@ class FileHandler implements DataDefinition\FileHandler
     /**
      * @return null|number The decimal representation of the current version
      * @since 18-07-29
+     * @edit 18-09-18
+     * - Graciously handle DOING
+     * @edit 18-09-25
+     * - Fixed version bug in DPRCT
      */
     public function getBuild()
     {
         $rntVal;
         switch ($this->currentVersion)
         {
+            case "DOING":
             case "NDFND":
+            case "DPRCT":
             case "DEPRECATED":
                 $rntVal = null;
                 break;
             default:
                 $rntVal = \hexdec($this->currentVersion);
                 break;
-        }
-        if (\strstr($this->currentVersion, "DOING") !== false) {
-            $rntVal = null;
         }
         return $rntVal;
     }

@@ -26,6 +26,9 @@ namespace GIndie\ProjectHandler\Parser;
  * @edit 18-05-19
  * - Revised Project packages
  * @version 0A.50
+ * @edit 18-11-26
+ * - Updated parseTag()
+ * @version 0A.60
  * @todo
  * - Upgrade/verify structure for A1
  */
@@ -40,18 +43,24 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * @param type $value
      * 
      * @edit 18-01-02
+     * @edit 18-11-26
+     * - Parse tag ut_skip
      */
     protected function parseTag($tagname, $value)
     {
         switch ($tagname)
         {
+            case "ut_skip":
+                $this->parsed["ut_skip"] = true;
+                break;
             case "ut_str":
                 $arrayTmp = \explode(" ", $value);
                 $this->parsed["unit_test"][\array_shift($arrayTmp)]["expected"] = $this->parseUnitTestString($arrayTmp);
                 break;
             case "ut_params":
                 $arrayTmp = \explode(" ", $value);
-                $this->parsed["unit_test"][\array_shift($arrayTmp)]["parameters"] = $this->parseParameters(\join(" ", $arrayTmp));
+                $this->parsed["unit_test"][\array_shift($arrayTmp)]["parameters"] = $this->parseParameters(\join(" ",
+                                                                                                                 $arrayTmp));
                 break;
             case "ut_factory":
                 $arrayTmp = \explode(" ", $value);
