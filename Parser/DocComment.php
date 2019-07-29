@@ -1,16 +1,21 @@
 <?php
 
-namespace GIndie\ProjectHandler\Parser;
-
 /**
- * Description of DocComment
+ * GI-ProjectHandler-DVLP - DocComment 
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
  *
  * @package GIndie\ProjectHandler\ParserDocComment
- * 
+ *
  * @since 18-01-01
+ * @version 0A.80
+ */
+
+namespace GIndie\ProjectHandler\Parser;
+
+/**
+ * 
  * @edit 18-01-01
  * - Extend from \GIndie\Common\Parser\DocComment
  * - Created methods
@@ -19,16 +24,13 @@ namespace GIndie\ProjectHandler\Parser;
  * - Created method: parseFactory()
  * @edit 18-01-20
  * - Updated parseFactory()
- * @version 0A.00
  * @edit 18-05-13
  * - Upgraded file structure and namespace
- * @version 0A.0F
  * @edit 18-05-19
  * - Revised Project packages
- * @version 0A.50
  * @edit 18-11-26
  * - Updated parseTag()
- * @version 0A.60
+ * 
  * @todo
  * - Upgrade/verify structure for A1
  */
@@ -48,8 +50,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      */
     protected function parseTag($tagname, $value)
     {
-        switch ($tagname)
-        {
+        switch ($tagname) {
             case "ut_skip":
                 $this->parsed["ut_skip"] = true;
                 break;
@@ -60,7 +61,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
             case "ut_params":
                 $arrayTmp = \explode(" ", $value);
                 $this->parsed["unit_test"][\array_shift($arrayTmp)]["parameters"] = $this->parseParameters(\join(" ",
-                                                                                                                 $arrayTmp));
+                                $arrayTmp));
                 break;
             case "ut_factory":
                 $arrayTmp = \explode(" ", $value);
@@ -143,13 +144,14 @@ class DocComment extends \GIndie\Common\Parser\DocComment
      * @param string $string
      * @return array
      * @since 18-01-20
+     * @edit 19-05-25
+     * - Removed @todo text
      */
     private function parseParameters($string)
     {
         $rtnArray = [];
         while (\strlen($string) > 0) {
-            switch (\substr($string, 0, 1))
-            {
+            switch (\substr($string, 0, 1)) {
                 case '"':
                     $parsedString = $this->parseParamString($string);
                     $rtnArray[] = $parsedString;
@@ -184,6 +186,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
                     }
                     break;
                 default:
+//                    $rtnArray[] = "@todo";
                     break;
             }
         }
@@ -199,8 +202,7 @@ class DocComment extends \GIndie\Common\Parser\DocComment
     {
         $rtnArray = [];
         foreach ($data as $tmp) {
-            switch (0)
-            {
+            switch (0) {
                 case \strcmp($tmp, "null"):
                     $rtnArray[] = "null";
                     break;

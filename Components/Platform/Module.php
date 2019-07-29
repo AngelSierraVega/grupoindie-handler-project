@@ -9,7 +9,7 @@
  * @package GIndie\ProjectHandler\Main
  *
  * @since 18-02-23
- * @version DOING 
+ * @version 0A.C0 
  * @todo Debug error on request phar
  */
 
@@ -36,35 +36,57 @@ use GIndie\Platform\View\Input;
  * - Upgraded class Docblock
  * @edit 18-11-01
  * - Removed displayProjectInformation()
+ * @edit 19-02-11
+ * - Defined name(), description(), configActions()
  * @todo
  * - Test Phar creation
  * - Display To do list in VersionHandler widget
  */
 abstract class Module extends \GIndie\Platform\Controller\Module
 {
-    public static function description()
-    {
-        return "NA";
-    }
 
+    /**
+     * {@inheritdoc}
+     * @since 18-??-??
+     * @edit 19-02-11
+     */
     public static function name()
     {
-        return static::NAME;
+        return "Project Information";
+    }
+
+    /**
+     * {@inheritdoc}
+     * @since 19-02-11
+     * @since 18-??-??
+     */
+    public static function description()
+    {
+        return "Deploys information on project's source code.";
+    }
+
+    /**
+     * {@inheritdoc}
+     * @since 19-02-11
+     */
+    public static function configActions()
+    {
+        
     }
 
     /**
      *
-     * @varDPR \GIndie\ProjectHandler\AbstractProjectHandler
+     * @var \GIndie\ProjectHandler\AbstractProjectHandler
      * @since 18-02-24
      */
-    protected $projectHandlerDPR;
+    protected $projectHandler;
 
     /**
      *
      * @var \GIndie\ProjectHandler\VersionHandler
      * @since 18-09-18
      */
-    protected $versionHandlerDPR;
+    protected $versionHandler;
 
     /**
      * 
@@ -101,16 +123,23 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      * - Added wdgtInfo
      * @edit 18-12-07
      * - Upgraded from config() to configPlaceholders()
+     * @edit 19-02-01
+     * - 
      */
     public function configPlaceholders()
     {
-        $this->placeholder("o-o-o")->typeCallable([$this, "wdgtModuleInfo"]);
-        $this->placeholder("i-ii-i")->typeCallable([$this, "wdgtProjectInformation"]);
-        $this->placeholder("i-ii-ii")->typeCallable([$this, "wdgtDoing"]);
-        $this->placeholder("ii-i-i")->typeCallable([$this, "wdgtVersion"]);
-        $this->placeholder("iii-i-i")->typeCallable([$this, "wdgtUnitTest"]);
+        $this->placeholder("wdgtProjectInformation")->setColumnSize(4);
+        $this->placeholder("wdgtProjectVersions")->setColumnSize(8);
+        $this->placeholder("wdgtVersion")->setColumnSize(6);
+        $this->placeholder("wdgtDoing")->setColumnSize(6);
+        $this->placeholder("wdgtUnitTest")->setColumnSize(6);
     }
-    
+
+    /**
+     * 
+     * {@inheritdoc}
+     * @since 18-12-??
+     */
     public function wdgtModuleInfo()
     {
         $projectHandler = static::projectHandler();
@@ -130,7 +159,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      */
     public function wdgtProjectInformation()
     {
-        
+
         $widget = new \GIndie\Platform\View\Widget("Project information", false, true, false, true);
         $display = [];
         $display["Current version"] = $this->versionHandler->getProjectVersion();
@@ -147,6 +176,19 @@ abstract class Module extends \GIndie\Platform\Controller\Module
     }
 
     /**
+     * 
+     * @return \GIndie\Platform\View\Widget
+     * @since 19-02-01
+     */
+    public function wdgtProjectVersions()
+    {
+        $widget = new \GIndie\Platform\View\Widget("wdgtProjectVersions", false, true, false, false);
+        $widget->getBody()->addContent($this->versionHandler->dspTableVersions());
+        $widget->setContext("info");
+        return $widget;
+    }
+
+    /**
      * @return \GIndie\Platform\View\Widget
      * @since 18-11-01
      */
@@ -157,8 +199,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
         $table->addClass("table-condensed");
         $table->addHeader(["File", "Declared edit", "Real edit", "Version"]);
         foreach ($this->versionHandler->getAttentionFiles() as $fileHandler) {
-            switch ($fileHandler->getCurrentVersion())
-            {
+            switch ($fileHandler->getCurrentVersion()) {
                 case "DOING":
                     $table->addRow([$fileHandler->getFileId(), $fileHandler->getLastEdit(), $fileHandler->getRealEdit(), $fileHandler->getCurrentVersion()]);
                     break;
@@ -182,7 +223,8 @@ abstract class Module extends \GIndie\Platform\Controller\Module
     public function wdgtVersion()
     {
         //$versionHandler = $this->projectHandler->execVersionHandler();
-        $widget = new \GIndie\Platform\View\Widget("Project version", false, \array_values($this->versionHandler->getHtmlResults()), false, true);
+        $widget = new \GIndie\Platform\View\Widget("File versions", false,
+                \array_values($this->versionHandler->getHtmlResults()), false, true);
         $widget->setContext("info");
         return $widget;
     }
@@ -196,7 +238,8 @@ abstract class Module extends \GIndie\Platform\Controller\Module
     public function wdgtUnitTest()
     {
         $this->projectHandler->execUnitTest();
-        $widget = new \GIndie\Platform\View\Widget("Project Unit Test", false, $this->projectHandler->unitTestResult);
+        $widget = new \GIndie\Platform\View\Widget("Project Unit Test", false,
+                $this->projectHandler->unitTestResult);
         if ($this->projectHandler->unitTestStatus === true) {
             $widget->setContext("success");
         } else {
@@ -221,8 +264,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
      */
     protected function widgetReloadDPR($id, $class, $selected)
     {
-        switch ($id)
-        {
+        switch ($id) {
 //            case "i-i-i":
 //
 //                break;
@@ -269,12 +311,14 @@ abstract class Module extends \GIndie\Platform\Controller\Module
         $form->setAttribute("gip-action", "CREATE-PHAR");
         $form->setAttribute("target", "#gip-modal .modal-content");
 
-        $inputDistPath = Input::Text("dist-folder", $this->pathToDistFolder(), true, false, "ALT C:\\Users\\angel_000\\Dropbox\\srcs\\prdc\\SistemaIntegralIngresos");
+        $inputDistPath = Input::Text("dist-folder", $this->pathToDistFolder(), true, false,
+                        "ALT C:\\Users\\angel_000\\Dropbox\\srcs\\prdc\\SistemaIntegralIngresos");
         $form->addContent(Input::FomGroupClean("Distribution folder", "dist-folder", $inputDistPath));
 
         $namespace = $this->projectHandler->getNamespace();
         $namespace = \str_replace("\\", DIRECTORY_SEPARATOR, $namespace);
-        $inputLocalPath = Input::Text("local-path", $namespace, true, false, "ALT \\private\\libs  ..\\ScriptGenerator  ..\\ScriptGeneratorNew");
+        $inputLocalPath = Input::Text("local-path", $namespace, true, false,
+                        "ALT \\private\\libs  ..\\ScriptGenerator  ..\\ScriptGeneratorNew");
         $form->addContent(Input::FomGroupClean("Local path", "local-path", $inputLocalPath));
 
 
@@ -309,7 +353,8 @@ abstract class Module extends \GIndie\Platform\Controller\Module
             if (!\file_exists($srcRoot . $this->projectHandler->autoloaderFilename())) {
                 throw new \Exception("Unable to read " . $srcRoot . $this->projectHandler->autoloaderFilename());
             } else {
-                if (\GIndie\Common\PHP\Directories::createFolderStructure($_POST["dist-folder"], $_POST["local-path"])) {
+                if (\GIndie\Common\PHP\Directories::createFolderStructure($_POST["dist-folder"],
+                                $_POST["local-path"])) {
                     $srcRoot = \realpath($srcRoot);
                     $exclude = $this->projectHandler->excludeFromPhar();
                     $filter = function ($file, $key, $iterator) use ($exclude) {
@@ -338,7 +383,8 @@ abstract class Module extends \GIndie\Platform\Controller\Module
                      * \file_put_contents($pathToPhar, $data);
                      */
                     if (\file_exists($pathToPhar)) {
-                        $modal = \GIndie\Platform\View\Modal\Content::succcess("Phar created", $pathToPhar);
+                        $modal = \GIndie\Platform\View\Modal\Content::succcess("Phar created",
+                                        $pathToPhar);
                     } else {
                         throw new \Exception($pathToPhar);
                     }
@@ -347,7 +393,8 @@ abstract class Module extends \GIndie\Platform\Controller\Module
                 }
             }
         } catch (\Exception $exc) {
-            $modal = \GIndie\Platform\View\Modal\Content::danger("Phar NOT created", $exc->getMessage());
+            $modal = \GIndie\Platform\View\Modal\Content::danger("Phar NOT created",
+                            $exc->getMessage());
         }
         return $modal;
     }
@@ -365,8 +412,7 @@ abstract class Module extends \GIndie\Platform\Controller\Module
 
 //        throw new \Exception($action);
         $rtnAction = null;
-        switch ($action)
-        {
+        switch ($action) {
             case "REQUEST-PHAR":
 //                $projectHandler = static::projectHandler();
 //                $this->projectHandler = new $projectHandler();

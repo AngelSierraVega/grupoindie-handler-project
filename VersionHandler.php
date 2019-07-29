@@ -9,7 +9,7 @@
  * @package GIndie\ProjectHandler\VersionHandler
  *
  * @since 18-05-17
- * @version 0A.B0
+ * @version 0A.C0
  */
 
 namespace GIndie\ProjectHandler;
@@ -27,6 +27,8 @@ use GIndie\ScriptGenerator\HTML5;
  * - Added getFormattedPackageVersion()
  * @edit 18-11-05
  * - Class handles files that need attention
+ * @edit 19-04-20
+     * - Ommited logs
  */
 class VersionHandler implements DataDefinition\VersionHandler
 {
@@ -83,8 +85,7 @@ class VersionHandler implements DataDefinition\VersionHandler
      */
     private function handleFileTypes(\GIndie\ProjectHandler\FileHandler $file)
     {
-        switch ($file->getFiletype())
-        {
+        switch ($file->getFiletype()) {
             case FileHandler::FILETYPE_ABSTRACT_CLASS:
                 $this->fileTypes[FileHandler::FILETYPE_ABSTRACT_CLASS] ++;
                 break;
@@ -143,34 +144,42 @@ class VersionHandler implements DataDefinition\VersionHandler
      * @edit 18-11-05
      * - Attention files if getBuild() is not numeric
      * - Attention files if getLastEdit() is not getRealEdit()
+     * @edit 19-04-20
+     * - Ommited logs
      */
     private function handleFiles($pathToSourceCode)
     {
-        $iterator = \GIndie\Common\PHP\Files::getRecursiveIteratorIterator($pathToSourceCode, $this->projectHandler->excludeFromPhar());
+        $iterator = \GIndie\Common\PHP\Files::getRecursiveIteratorIterator($pathToSourceCode,
+                        $this->projectHandler->excludeFromPhar());
         $this->projectBuild = 0;
         $tmpCount = 0;
         $this->projectLOC = 0;
         $this->doingFiles = [];
         foreach ($iterator as $value) {
             $fileHandlerTemp = $this->getFileHandler($value);
-            $this->handleFileTypes($fileHandlerTemp);
-            $this->fileHandler[$fileHandlerTemp->getPackage()][$fileHandlerTemp->getFileId()] = $fileHandlerTemp;
-            $tmpBuild = $fileHandlerTemp->getBuild();
-            if (\is_numeric($tmpBuild)) {
-                $tmpCount++;
-                $this->projectBuild += $tmpBuild;
-            } else {
-                if ($fileHandlerTemp->getFiletype() != FileHandler::FILETYPE_LOG) {
-                    $this->attentionFiles[] = $fileHandlerTemp;
-                }
-            }
-            $this->projectLOC += $fileHandlerTemp->getLOC();
-            switch ($fileHandlerTemp->getLastEdit())
-            {
-                case $fileHandlerTemp->getRealEdit():
+            switch ($fileHandlerTemp->getFiletype()) {
+                case FileHandler::FILETYPE_LOG:
                     break;
                 default:
-                    $this->attentionFiles[] = $fileHandlerTemp;
+                    $this->handleFileTypes($fileHandlerTemp);
+                    $this->fileHandler[$fileHandlerTemp->getPackage()][$fileHandlerTemp->getFileId()] = $fileHandlerTemp;
+                    $tmpBuild = $fileHandlerTemp->getBuild();
+                    if (\is_numeric($tmpBuild)) {
+                        $tmpCount++;
+                        $this->projectBuild += $tmpBuild;
+                    } else {
+                        if ($fileHandlerTemp->getFiletype() != FileHandler::FILETYPE_LOG) {
+                            $this->attentionFiles[] = $fileHandlerTemp;
+                        }
+                    }
+                    $this->projectLOC += $fileHandlerTemp->getLOC();
+                    switch ($fileHandlerTemp->getLastEdit()) {
+                        case $fileHandlerTemp->getRealEdit():
+                            break;
+                        default:
+                            $this->attentionFiles[] = $fileHandlerTemp;
+                            break;
+                    }
                     break;
             }
         }
@@ -245,11 +254,12 @@ class VersionHandler implements DataDefinition\VersionHandler
      * @edit 18-05-19
      * - Abstracted code into dspResultsTxt()
      * - Abstracted code into dspTableVersions()
+     * @edit 19-02-04
      */
     public function getHtmlResults()
     {
         $rntArray = [];
-        $rntArray["Versions"] = $this->dspTableVersions();
+//        $rntArray["Versions"] = $this->dspTableVersions();
         foreach ($this->getPackages() as $packageId) {
             $rntArray[$packageId] = $this->dspTableSubpackage($packageId);
         }
@@ -261,17 +271,19 @@ class VersionHandler implements DataDefinition\VersionHandler
      * 
      * @return \GIndie\ScriptGenerator\Dashboard\Tables\Table
      * @since 18-05-19
+     * @edit 19-02-01
+     * - Upgraded method visibility
      * @todo
      * - Add caption
      */
-    protected function dspTableVersions()
+    public function dspTableVersions()
     {
         $versionsTable = new \GIndie\ScriptGenerator\Dashboard\Tables\Table();
         $versionsTable->addClass("table-bordered table-condensed");
         $versionsTable->addHeader(HTML5\Tables::cellHeader($this->projectHandler->getNamespace() . " v " . $this->getProjectVersion())->setAttribute("colspan", "6"));
         $header = $versionsTable->getHeader();
         $header->addRow(["Threshold", "Code", "Description", "Status"]);
-        foreach ($this->projectHandler->versions() as $tmpVersion) {
+        foreach (\array_reverse($this->projectHandler->versions()) as $tmpVersion) {
             $advance = \hexdec($tmpVersion["threshold"]) . "-----" . $this->projectBuild;
             $advance = $this->projectBuild / \hexdec($tmpVersion["threshold"]);
             if ($advance > 1) {
@@ -302,7 +314,8 @@ class VersionHandler implements DataDefinition\VersionHandler
      */
     protected function getFormattedPackageVersion($subpackageId)
     {
-        return \substr_replace(\str_pad(\strtoupper(\dechex($this->getPackageVersion($subpackageId))), 4, "0", \STR_PAD_LEFT), ".", 2, 0);
+        return \substr_replace(\str_pad(\strtoupper(\dechex($this->getPackageVersion($subpackageId))),
+                        4, "0", \STR_PAD_LEFT), ".", 2, 0);
     }
 
     /**
@@ -372,7 +385,8 @@ class VersionHandler implements DataDefinition\VersionHandler
         $preNode->addContent($this->dspFileTypes() . "\n");
         $preNode->addContent("-------------------------------VERSIONS--------------------------------|\n");
         foreach ($this->projectHandler->versions() as $tmpVersion) {
-            $preNode->addContent("[" . $tmpVersion["threshold"] . "] " . \str_pad($tmpVersion["code"], 13, ".") . "| " . $tmpVersion["description"] . "\n");
+            $preNode->addContent("[" . $tmpVersion["threshold"] . "] " . \str_pad($tmpVersion["code"],
+                            13, ".") . "| " . $tmpVersion["description"] . "\n");
         }
         $preNode->addContent("--------------------------------FILE-----------------------------|--V--|\n");
         foreach ($this->fileHandler as $packageId => $fileId) {
@@ -406,7 +420,7 @@ class VersionHandler implements DataDefinition\VersionHandler
      */
     public function getProjectVersion()
     {
-        return substr_replace(\str_pad(\strtoupper(\dechex($this->projectBuild)), 4, "0", \STR_PAD_LEFT), ".", 2, 0);
+        return \substr_replace(\str_pad(\strtoupper(\dechex($this->projectBuild)), 4, "0", \STR_PAD_LEFT), ".", 2, 0);
         //return \dechex($this->projectBuild) . " (" . $this->projectBuild . ")";
     }
 

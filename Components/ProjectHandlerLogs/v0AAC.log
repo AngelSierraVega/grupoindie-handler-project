@@ -1,0 +1,40 @@
+19-01-01 to 19-07-29
+- Exclude folder ProjectHandlerLogs
+- Exclude log files from VersionHandler
+- Multiple uptades to Module
+
+-------------------------------PROJECT---------------------------------|
+\GIndie\ProjectHandler
+19-07-29 v:0A.AC LOC:2838
+ABS(2) CLA(6) INT(6) SCR(1) TRA(2) LOG(0) NDF(0) 
+-------------------------------VERSIONS--------------------------------|
+[0A.00] AlphaCero....| Functional project: UnitTest
+[0A.0F] AlphaCeroFinal| Final adaptation for UnitTest into ProjectHandler
+[0A.10] AlphaOne.....| Functional restructured project as ProjectHandler
+[0A.50] AlphaFive....| Functional subpackage VersionHandler
+[0A.60] AlphaSix.....| VersionHandler: Functional packages
+[0A.A0] AlphaAlpha...| Functional subpackage UnitTest
+[0B.00] BetaCero.....| Fully functional implementation of ProjectHandler, FileHandler, VersionHandler and UnitTest
+[0D.00] BetaD........| Functional GitHandler
+[0F.00] BetaFinal....| Revised project to use ScriptGenerator
+[10.00] One..........| Version handling, phar administration and generation, and project unit test
+--------------------------------FILE-----------------------------|--V--|
+[ABS] AbstractProjectHandler.php.................................|0B.30|
+[ABS] Components\Platform\Module.php.............................|0A.C0|
+[INT] DataDefinition\ProjectHandler.php..........................|0B.00|
+[SCR] AutoloaderProjectHandler.php...............................|0B.00|
+[CLA] Components\ProjectHandler\ProjectHandler.php...............|0B.00|
+[INT] DataDefinition\FileHandler.php.............................|0B.00|
+[INT] DataDefinition\FileHandlerConstants.php....................|0B.60|
+[CLA] FileHandler.php............................................|0B.70|
+[INT] DataDefinition\VersionHandler.php..........................|0B.00|
+[CLA] VersionHandler.php.........................................|0A.C0|
+[TRA] Handler\Common.php.........................................|0A.0F|
+[CLA] Handler\HandlerClass.php...................................|0A.0F|
+[CLA] Handler\HandlerMethod.php..................................|0A.30|
+[INT] Handler\InterfaceHandler.php...............................|0A.0F|
+[TRA] Handler\ReflectionCommon.php...............................|0A.0F|
+[INT] Handler\ReflectionInterface.php............................|0A.0F|
+[CLA] Parser\DocComment.php......................................|0A.80|
+-----------------------------------------------------------------------|
+ \GIndie\ProjectHandler v 0A.AC

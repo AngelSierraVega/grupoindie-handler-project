@@ -7,7 +7,7 @@
  *
  * @package GIndie\ProjectHandler\Main
  * 
- * @version 0B.00
+ * @version 0B.30
  * @since 18-02-23
  */
 
@@ -206,10 +206,12 @@ abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataD
     /**
      * @return array
      * @since 18-03-27
+     * @edit 19-04-20
+     * - Added excluded folder ProjectHandlerLogs.
      */
     public static function excludeFromPhar()
     {
-        return [".git", ".gitignore", "nbproject"];
+        return [".git", ".gitignore", "nbproject", "ProjectHandlerLogs"];
     }
 
 }
