@@ -7,7 +7,7 @@
  *
  * @package GIndie\ProjectHandler\Main
  * 
- * @version 0B.30
+ * @version 0B.50
  * @since 18-02-23
  */
 
@@ -38,6 +38,8 @@ use GIndie\ScriptGenerator\HTML5;
  * - Funcional VersionHandler
  * @edit 18-09-18
  * - Upgraded Dockblock
+ * @edit 19-08-02
+ * - Exclude from phar: LICENSE and README.md
  */
 abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataDefinition\ProjectHandler
 {
@@ -109,8 +111,7 @@ abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataD
             foreach (static::projectClasses() as $classTest) {
                 $classTest = new \GIndie\ProjectHandler\Handler\HandlerClass($classTest);
                 $classTest->execUnitTest();
-                switch (true)
-                {
+                switch (true) {
                     case \is_string($classTest->unitTestStatus):
                         $this->unitTestStatus = false;
                         echo "<tr class='warning'><td>{$classTest->formattedTitle()}</td><td>{$classTest->unitTestStatus}</td><td>{$classTest->unitTestCount}</td></tr>";
@@ -208,10 +209,11 @@ abstract class AbstractProjectHandler implements Handler\InterfaceHandler, DataD
      * @since 18-03-27
      * @edit 19-04-20
      * - Added excluded folder ProjectHandlerLogs.
+     * @edit 19-08-02
      */
     public static function excludeFromPhar()
     {
-        return [".git", ".gitignore", "nbproject", "ProjectHandlerLogs"];
+        return [".git", ".gitignore", "nbproject", "ProjectHandlerLogs", "LICENSE", "README.md"];
     }
 
 }
