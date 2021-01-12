@@ -6,7 +6,7 @@ namespace GIndie\ProjectHandler\Handler;
  * Description of Common
  *
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
- * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ * @copyright (CC) 2020 Angel Sierra Vega. Grupo INDIE.
  *
  * @package GIndie\ProjectHandler\UnitTest
  *

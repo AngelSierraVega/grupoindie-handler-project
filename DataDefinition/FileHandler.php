@@ -3,7 +3,7 @@
 /**
  * GI-ProjectHandler-DVLP - FileHandler 
  *
- * @copyright (C) 2018 Angel Sierra Vega. Grupo INDIE.
+ * @copyright (CC) 2020 Angel Sierra Vega. Grupo INDIE.
  * @author Angel Sierra Vega <angel.sierra@grupoindie.com>
  *
  * @package GIndie\ProjectHandler\FileHandler
